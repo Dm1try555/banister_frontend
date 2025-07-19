@@ -119,15 +119,23 @@ const apiData = await useFetch('https://your-django-api-endpoint/');
 
         <!-- Search Bar - увеличенный -->
         <div class="search-bar d-flex justify-content-center align-items-center">
-          <div class="d-flex" style="max-width: 700px; width: 100%;">
-            <input type="text" class="form-control border-end-0 search-input-large"
-                   placeholder="I'm looking for..." />
-            <button class="btn btn-nav-primary find-providers search-btn-large d-flex align-items-center justify-content-center" style="margin-left: 20px; width: 400px; font-weight: 700;">
+          <div class="d-flex align-items-center gap-2" style="max-width: 700px; width: 100%;">
+            <input
+              type="text"
+              class="form-control border-end-0 search-input-large"
+              placeholder="I'm looking for..."
+              style="height: 50px;"
+            />
+            <button
+              class="btn btn-nav-primary find-providers search-btn-large d-flex align-items-center justify-content-center"
+              style="width: 400px; font-weight: 700; height: 50px;"
+            >
               <Icon name="heroicons:magnifying-glass" class="me-2" style="width: 22px; height: 22px;" />
               Find Service Providers
             </button>
           </div>
         </div>
+
       </div>
     </main>
 
