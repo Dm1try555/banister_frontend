@@ -4,13 +4,11 @@ export default defineNuxtConfig({
     'usebootstrap',
   ],
   
-  // Global CSS
   css: [
     '~/assets/css/main.css',
     'bootstrap/dist/css/bootstrap.min.css'
   ],
-  
-  // App configuration
+
   app: {
     head: {
       title: 'BANISTER - Trusted Home Staff',
@@ -23,26 +21,17 @@ export default defineNuxtConfig({
         }
       ],
       link: [
-        // Preload critical fonts
         {
           rel: 'preload',
           href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap',
           as: 'style'
         },
-        {
-          rel: 'preconnect',
-          href: 'https://fonts.googleapis.com'
-        },
-        {
-          rel: 'preconnect',
-          href: 'https://fonts.gstatic.com',
-          crossorigin: ''
-        }
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }
       ]
     }
   },
-  
-  // Icon configuration
+
   icon: {
     size: '24px',
     class: '',
@@ -54,19 +43,19 @@ export default defineNuxtConfig({
       'arrow': 'heroicons:arrow-right'
     }
   },
-  
-  // Build configuration
+
   build: {
     transpile: ['bootstrap']
   },
-  
-  // Runtime config for environment variables
+
+  nitro: {
+    preset: 'netlify'
+  },
+
   runtimeConfig: {
-    // Private keys (only available on server-side)
     apiSecret: '',
-    // Public keys (exposed to client-side)
     public: {
       apiBase: '/api'
     }
   }
-})
+});
