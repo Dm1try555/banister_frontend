@@ -1,0 +1,96 @@
+/* Typography Classes */
+.inter-font {
+    font-family: var(--font-inter);
+    font-weight: 400;
+  }
+  
+  .inter-font-light {
+    font-family: var(--font-inter);
+    font-weight: 300;
+  }
+  
+  .inter-font-medium {
+    font-family: var(--font-inter);
+    font-weight: 500;
+  }
+  
+  .inter-font-semibold {
+    font-family: var(--font-inter);
+    font-weight: 600;
+  }
+  
+  .inter-font-bold {
+    font-family: var(--font-inter);
+    font-weight: 700;
+  }
+  
+  .inter-font-extrabold {
+    font-family: var(--font-inter);
+    font-weight: 800;
+  }
+  
+  /* Brand Typography */
+  .brand-title {
+    font-family: var(--font-inter);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  
+  .brand-subtitle {
+    font-family: var(--font-inter);
+    font-size: 0.75rem;
+    line-height: 1;
+    color: #6c757d;
+    font-weight: 400;
+  }
+  
+  /* Hero Typography */
+  .hero-title {
+    font-family: var(--font-inter);
+    color: var(--color-pink);
+    font-weight: 900;
+    font-size: 4rem;
+    line-height: 0.9;
+    letter-spacing: -0.025em;
+  }
+  
+  .hero-subtitle {
+    font-family: var(--font-inter);
+    font-size: 1.25rem;
+    max-width: auto; 
+    margin: 0 auto;
+    color: var(--color-primary-green);
+    font-weight: 600; 
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+  }
+  
+  /* Feature Text */
+  .feature-text {
+    font-family: var(--font-inter);
+    font-size: 0.9rem;
+    color: var(--color-primary-green);
+    line-height: 1.4;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+  }
+  
+  /* Navigation Text */
+  .nav-text {
+    font-family: var(--font-inter);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+  
+  /* Responsive Typography */
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: clamp(2rem, 6vw, 3rem) !important;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.1rem !important;
+    }
+  }
