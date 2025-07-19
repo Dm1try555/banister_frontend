@@ -134,7 +134,7 @@
   
           <!-- Find Your Professional Button -->
           <div class="text-center mt-5">
-            <NuxtLink to="/find-professional" class="btn btn-primary-green py-3 px-5 text-decoration-none" style="font-family: var(--font-inter); font-weight: 500;">
+            <NuxtLink to="#" class="btn btn-primary-green py-3 px-5 text-decoration-none" style="font-family: var(--font-inter); font-weight: 500;">
               Find your professional
             </NuxtLink>
           </div>
