@@ -19,9 +19,9 @@ const apiData = await useFetch('https://your-django-api-endpoint/');
       <div class="collapse navbar-collapse justify-content-center">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link btn btn-nav-primary text-white px-4 py-2 rounded me-3 btn-nav-text" href="#">
+            <NuxtLink to="/join/signin" class="nav-link btn btn-nav-primary text-white px-4 py-2 rounded me-3 btn-nav-text">
               Start now
-            </a>
+            </NuxtLink>
           </li>
           <li class="nav-item">
             <a class="nav-link text-dark px-3 nav-text" href="#">How It Works</a>
