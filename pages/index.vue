@@ -61,15 +61,21 @@ const apiData = await useFetch('https://your-django-api-endpoint/');
         
         <!-- CTA Buttons - увеличенные -->
         <div class="hero-buttons mb-5 d-flex flex-column flex-sm-row justify-content-center gap-4">
-            <button class="btn btn-nav-primary create-profile-btn btn-large-text d-flex align-items-center justify-content-center"
-            style="width: 200px; font-weight: 700;">
+          <NuxtLink
+            to="/join/signin"
+            class="btn btn-nav-primary create-profile-btn btn-large-text d-flex align-items-center justify-content-center text-decoration-none"
+            style="width: 200px; font-weight: 700;"
+          >
             Create Profile
             <Icon name="heroicons:arrow-right" class="ms-2" style="width: 22px; height: 22px;" />
-          </button>
-          <button class="btn-outline-secondary learn-more btn-large-text" 
-          style="width: 150px;">
-            Learn More
-          </button>
+          </NuxtLink>
+
+          <NuxtLink
+            to="/join/signin"
+            class="btn-outline-secondary learn-more btn-large-text text-decoration-none d-flex align-items-center justify-content-center" 
+            style="width: 150px;">
+              Learn More
+          </NuxtLink>
         </div>
 
         <!-- Features -->
