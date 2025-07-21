@@ -1,3 +1,25 @@
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useApi } from '~/utils/api'
+import { definePageMeta } from '#imports'
+definePageMeta({ layout: 'customer-dashboard' })
+const api = useApi()
+const messages = ref([])
+const loading = ref(true)
+const error = ref('')
+
+onMounted(async () => {
+  try {
+    messages.value = await api.get('message/')
+  } catch (e) {
+    error.value = 'Ошибка загрузки сообщений'
+  } finally {
+    loading.value = false
+  }
+})
+</script>
+
+
 <template>
     <!-- Указываем, что эта страница использует макет 'customer-dashboard' -->
     <div class="card border-0 shadow-sm flex-grow-1 d-flex flex-column" style="background-color: white; border-radius: 16px;">
@@ -28,71 +50,6 @@
     </div>
   </template>
   
-  <script setup>
-  import { definePageMeta } from '#imports';
-  
-  definePageMeta({
-    layout: 'customer-dashboard'
-  });
-  </script>
-  
-  <style scoped>
-  /* Chat specific styles (moved from messages.vue) */
-  .chat-messages {
-    display: flex;
-    flex-direction: column;
-    gap: 10px; /* Space between messages */
-  }
-  
-  .message-bubble {
-    max-width: 70%; /* Limit bubble width */
-    padding: 10px 15px;
-    border-radius: 15px;
-    word-wrap: break-word; /* Ensure long words break */
-  }
-  
-  .message-bubble.incoming {
-    background-color: #e9ecef; /* Light gray */
-    align-self: flex-start; /* Align to left */
-    border-bottom-left-radius: 5px; /* Sharper corner on bottom-left */
-  }
-  
-  .message-bubble.outgoing {
-    background-color: var(--color-primary-green); /* Dark green */
-    color: white;
-    align-self: flex-end; /* Align to right */
-    border-bottom-right-radius: 5px; /* Sharper corner on bottom-right */
-  }
-  
-  .message-bubble p {
-    margin-bottom: 5px; /* Space between text and timestamp */
-  }
-  
-  .message-bubble small {
-    display: block; /* Ensure timestamp is on new line */
-    text-align: right;
-  }
-  
-  /* Button styles (reused from previous components) */
-  .btn-primary-green {
-    background-color: var(--color-primary-green) !important;
-    border-color: var(--color-primary-green) !important;
-    color: white !important;
-    font-family: var(--font-inter);
-    font-weight: 500;
-    transition: all 0.3s ease;
-    text-decoration: none !important;
-  }
-  
-  .btn-primary-green:hover,
-  .btn-primary-green:focus,
-  .btn-primary-green:active {
-    background-color: var(--color-primary-green-hover) !important;
-    border-color: var(--color-primary-green-hover) !important;
-    color: white !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(45, 80, 22, 0.2);
-    text-decoration: none !important;
-  }
-  </style>
+
+ 
   

@@ -92,58 +92,5 @@
   ]);
   </script>
   
-  <style scoped>
-  /* Используем существующие CSS переменные */
-  :root {
-    --color-primary-green: #2d5016;
-    --color-primary-green-hover: #1a3009;
-    --color-secondary-green: #d4f4dd; /* Светло-зеленый для активного элемента сайдбара */
-    --color-pink: #ff6b9d;
-    --color-beige: #f5f1eb;
-    --color-text-muted: #6c757d;
-    --color-text-dark: #343a40; /* Для основного текста и заголовков */
-    --color-border: #dee2e6;
-    --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  }
-  
-  /* Table specific styles */
-  .visit-history-table th,
-  .visit-history-table td {
-    padding: 1rem; /* Adjust padding for table cells */
-    vertical-align: middle;
-    border-bottom: 1px solid #e9ecef; /* Light border between rows */
-  }
-  
-  .visit-history-table thead th {
-    border-bottom: 2px solid #e9ecef; /* Slightly thicker border for header */
-    font-weight: 600;
-    padding-bottom: 1.2rem;
-  }
-  
-  .visit-history-table tbody tr:last-child td {
-    border-bottom: none; /* No border for the last row */
-  }
-  
-  .badge {
-    padding: 0.5em 0.75em;
-    font-size: 0.85em;
-    font-weight: 600;
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 767.98px) {
-    .table-responsive {
-      border: 1px solid #e9ecef; /* Add border for responsive table on small screens */
-      border-radius: 8px;
-    }
-    .visit-history-table th,
-    .visit-history-table td {
-      padding: 0.75rem 0.5rem;
-      font-size: 0.85rem;
-    }
-    .badge {
-      font-size: 0.75em;
-    }
-  }
-  </style>
+ 
   

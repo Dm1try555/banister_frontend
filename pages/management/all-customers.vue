@@ -62,125 +62,23 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
-  import { definePageMeta } from '#imports';
-  
-  definePageMeta({
-    layout: 'management-dashboard'
-  });
-  
-  const allCustomers = ref([
-    {
-      name: 'Sarah Johnson',
-      email: 'sarah.johnson@email.co.uk',
-      phone: '+44 7700 900123',
-      service: 'Cleaning',
-      provider: 'Maria Rodriguez',
-      status: 'Active',
-      statusColor: '#28a745', // Green
-      lastPaymentAmount: '£120.00',
-      lastPaymentDate: '2024-01-15',
-    },
-    {
-      name: 'David Thompson',
-      email: 'david.thompson@email.co.uk',
-      phone: '+44 7700 900124',
-      service: 'Gardening',
-      provider: 'James Wilson',
-      status: 'Active',
-      statusColor: '#28a745',
-      lastPaymentAmount: '£85.00',
-      lastPaymentDate: '2024-01-14',
-    },
-    {
-      name: 'Emma Davies',
-      email: 'emma.davies@email.co.uk',
-      phone: '+44 7700 900125',
-      service: 'Nanny',
-      provider: 'Sophie Anderson',
-      status: 'Pending',
-      statusColor: '#ffc107', // Yellow
-      lastPaymentAmount: '£200.00',
-      lastPaymentDate: '2024-01-10',
-    },
-  ]);
+  import { ref, onMounted } from 'vue'
+  import { useApi } from '~/utils/api'
+  const api = useApi()
+  const customers = ref([])
+  const loading = ref(true)
+  const error = ref('')
+
+  onMounted(async () => {
+    try {
+      customers.value = await api.get('management/customers/')
+    } catch (e) {
+      error.value = 'Ошибка загрузки клиентов'
+    } finally {
+      loading.value = false
+    }
+  })
   </script>
   
-  <style scoped>
-  /* Используем существующие CSS переменные */
-  :root {
-    --color-primary-green: #2d5016;
-    --color-primary-green-hover: #1a3009;
-    --color-secondary-green: #d4f4dd;
-    --color-pink: #ff6b9d;
-    --color-beige: #f5f1eb;
-    --color-text-muted: #6c757d;
-    --color-text-dark: #343a40;
-    --color-border: #dee2e6;
-    --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  }
-  
-  .form-control {
-    font-family: var(--font-inter);
-    border-color: var(--color-border);
-  }
-  
-  .form-control:focus {
-    border-color: var(--color-primary-green);
-    box-shadow: 0 0 0 0.2rem rgba(45, 80, 22, 0.25);
-  }
-  
-  .customer-table th,
-  .customer-table td {
-    padding: 1rem;
-    vertical-align: middle;
-    border-bottom: 1px solid #e9ecef;
-  }
-  
-  .customer-table thead th {
-    border-bottom: 2px solid #e9ecef;
-    font-weight: 600;
-    padding-bottom: 1.2rem;
-  }
-  
-  .customer-table tbody tr:last-child td {
-    border-bottom: none;
-  }
-  
-  .badge {
-    padding: 0.5em 0.75em;
-    font-size: 0.85em;
-    font-weight: 600;
-  }
-  
-  .btn-outline-secondary {
-    background-color: #e9ecef;
-    border-color: #e9ecef;
-    color: var(--color-text-dark);
-    transition: all 0.3s ease;
-  }
-  
-  .btn-outline-secondary:hover {
-    background-color: #d4d8dc;
-    border-color: #d4d8dc;
-  }
-  
-  @media (max-width: 767.98px) {
-    .table-responsive {
-      border: 1px solid #e9ecef;
-      border-radius: 8px;
-    }
-    .customer-table th,
-    .customer-table td {
-      padding: 0.75rem 0.5rem;
-      font-size: 0.85rem;
-    }
-    .badge {
-      font-size: 0.75em;
-    }
-    .customer-table td:nth-child(2) { /* Contact column */
-      font-size: 0.8rem !important;
-    }
-  }
-  </style>
+
   

@@ -55,7 +55,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     apiSecret: '',
     public: {
-      apiBase: '/api'
+      apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:8000/api/v1/',
     }
   }
 });

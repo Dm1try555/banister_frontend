@@ -1,11 +1,11 @@
 <script setup>
+import AppCard from '@/components/common/AppCard.vue'
+import AppButton from '@/components/common/AppButton.vue'
 import { ref, computed } from 'vue';
 import { definePageMeta } from '#imports';
 
 // Указываем, что эта страница использует макет 'customer-dashboard'
-definePageMeta({
-  layout: 'customer-dashboard'
-});
+definePageMeta({ layout: 'customer-dashboard' });
 
 // Инициализируем текущую дату (например, 15 июня 2025 года)
 const today = new Date();
@@ -94,20 +94,20 @@ const upcomingServices = ref([
   <div class="row g-4">
     <!-- Select Date Card (Calendar) -->
     <div class="col-lg-6">
-      <div class="card border-0 shadow-sm p-4" style="background-color: white; border-radius: 16px;">
+      <AppCard customClass="border-0 shadow-sm p-4" :customStyle="'background-color: white; border-radius: 16px;'">
         <div class="card-body">
           <h2 class="h5 mb-4" style="font-family: var(--font-inter); font-weight: 600; color: var(--color-text-dark);">
             Select Date
           </h2>
           <div class="calendar">
             <div class="calendar-header d-flex justify-content-between align-items-center mb-3">
-              <button class="btn btn-light btn-sm rounded-circle" @click="goToPreviousMonth" style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
+              <AppButton variant="btn btn-light btn-sm rounded-circle" customStyle="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;" @click="goToPreviousMonth">
                 <Icon name="heroicons:chevron-left" size="16" />
-              </button>
+              </AppButton>
               <span class="h6 mb-0" style="font-family: var(--font-inter); font-weight: 600; color: var(--color-text-dark);">{{ displayMonthYear }}</span>
-              <button class="btn btn-light btn-sm rounded-circle" @click="goToNextMonth" style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
+              <AppButton variant="btn btn-light btn-sm rounded-circle" customStyle="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;" @click="goToNextMonth">
                 <Icon name="heroicons:chevron-right" size="16" />
-              </button>
+              </AppButton>
             </div>
             <div class="calendar-grid">
               <div class="day-name" style="color: var(--color-text-muted);">Su</div>
@@ -117,11 +117,10 @@ const upcomingServices = ref([
               <div class="day-name" style="color: var(--color-text-muted);">Th</div>
               <div class="day-name" style="color: var(--color-text-muted);">Fr</div>
               <div class="day-name" style="color: var(--color-text-muted);">Sa</div>
-              
-              <div v-for="(day, index) in calendarDays" :key="index" 
+              <div v-for="(day, index) in calendarDays" :key="index"
                    :class="{
-                     'calendar-day': true, 
-                     'active-day': day === selectedDay && index >= getFirstDayOfMonth(currentYear, currentMonth) && index < getFirstDayOfMonth(currentYear, currentMonth) + getDaysInMonth(currentYear, currentMonth), 
+                     'calendar-day': true,
+                     'active-day': day === selectedDay && index >= getFirstDayOfMonth(currentYear, currentMonth) && index < getFirstDayOfMonth(currentYear, currentMonth) + getDaysInMonth(currentYear, currentMonth),
                      'disabled-day': day === null || (index >= getFirstDayOfMonth(currentYear, currentMonth) + getDaysInMonth(currentYear, currentMonth))
                    }"
                    @click="selectDay(day)"
@@ -132,12 +131,11 @@ const upcomingServices = ref([
             </div>
           </div>
         </div>
-      </div>
+      </AppCard>
     </div>
-
     <!-- Upcoming Services Card -->
     <div class="col-lg-6">
-      <div class="card border-0 shadow-sm p-4" style="background-color: white; border-radius: 16px;">
+      <AppCard customClass="border-0 shadow-sm p-4" :customStyle="'background-color: white; border-radius: 16px;'">
         <div class="card-body">
           <h2 class="h5 mb-4" style="font-family: var(--font-inter); font-weight: 600; color: var(--color-text-dark);">
             Upcoming Services
@@ -152,60 +150,19 @@ const upcomingServices = ref([
               <div class="text-end">
                 <span class="badge bg-light text-dark mb-2" style="font-family: var(--font-inter); font-weight: 500; background-color: #e9ecef !important;">{{ service.date }}</span>
                 <div class="d-flex gap-2">
-                  <button class="btn btn-sm btn-outline-secondary" style="font-family: var(--font-inter); font-size: 0.85rem; background-color: #e9ecef; border-color: #e9ecef; color: var(--color-text-dark);">Check-in</button>
-                  <button class="btn btn-sm btn-outline-secondary" style="font-family: var(--font-inter); font-size: 0.85rem; background-color: #e9ecef; border-color: #e9ecef; color: var(--color-text-dark);">Check-out</button>
+                  <AppButton variant="btn btn-outline-secondary btn-sm" customStyle="font-size: 0.85rem; background-color: #e9ecef; border-color: #e9ecef; color: var(--color-text-dark);">
+                    Check-in
+                  </AppButton>
+                  <AppButton variant="btn btn-outline-secondary btn-sm" customStyle="font-size: 0.85rem; background-color: #e9ecef; border-color: #e9ecef; color: var(--color-text-dark);">
+                    Check-out
+                  </AppButton>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </AppCard>
     </div>
   </div>
 </template>
 
-<style scoped>
-/* Calendar specific styles (moved from customer-dashboard.vue) */
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-  text-align: center;
-}
-
-.day-name {
-  font-family: var(--font-inter);
-  font-weight: 600;
-  font-size: 0.9rem;
-  padding: 8px 0;
-}
-
-.calendar-day {
-  padding: 10px 0;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
-  color: var(--color-text-dark);
-}
-
-.calendar-day:hover:not(.disabled-day):not(.active-day) {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.calendar-day.active-day {
-  background-color: var(--color-primary-green);
-  color: white;
-  font-weight: 700;
-}
-
-.calendar-day.disabled-day {
-  color: var(--color-text-muted);
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-/* Upcoming Services styles (moved from customer-dashboard.vue) */
-.service-item {
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-</style>

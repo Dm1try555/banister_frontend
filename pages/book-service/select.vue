@@ -148,78 +148,8 @@ const handleContinue = () => {
 </template>
 
 <style scoped>
-/* Используем существующие CSS переменные */
-:root {
-  --color-primary-green: #2d5016;
-  --color-primary-green-hover: #1a3009;
-  --color-secondary-green: #d4f4dd;
-  --color-pink: #ff6b9d;
-  --color-beige: #f5f1eb;
-  --color-text-muted: #6c757d;
-  --color-border: #dee2e6;
-  --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-.bg-beige {
-  background-color: var(--color-beige);
-}
-
-.service-card {
-  border: 1px solid transparent; /* Default border, now visible */
-}
-
 .service-card.selected-card {
-  border-color: var(--color-pink) !important; /* Pink border for selected card */
-  box-shadow: 0 4px 15px rgba(255, 107, 157, 0.2); /* Pink shadow for selected card */
-}
-
-.service-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-/* Стили для отключенной кнопки */
-.btn-primary-green:disabled {
-  background-color: #cccccc !important; /* Серый фон */
-  border-color: #cccccc !important;
-  cursor: not-allowed;
-  opacity: 0.7;
-  box-shadow: none;
-  transform: none;
-}
-
-/* Responsive adjustments */
-@media (max-width: 767.98px) {
-  h1 {
-    font-size: 2rem !important;
-  }
-  .lead {
-    font-size: 1rem !important;
-  }
-  h2 {
-    font-size: 1.5rem !important;
-  }
-  .service-card .card-title {
-    font-size: 1.1rem !important;
-  }
-  .service-card .card-text {
-    font-size: 0.8rem !important;
-  }
-  .btn-primary-green {
-    width: 100%;
-    max-width: 250px;
-  }
-}
-
-/* Desktop layout: 3 items per row */
-@media (min-width: 768px) {
-  .col-md-4 {
-    flex: 0 0 auto;
-    width: 33.333333%; /* Ensure 3 items per row */
-  }
+  border-color: var(--color-pink) !important;
+  box-shadow: 0 4px 15px rgba(255, 107, 157, 0.2);
 }
 </style>

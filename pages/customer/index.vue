@@ -2,14 +2,12 @@
 // Этот компонент будет использоваться как базовая страница для /customer
 // Можно добавить здесь приветствие или перенаправить на /customer/calendar
 import { navigateTo } from '#app';
+import { definePageMeta } from '#imports'
+
+definePageMeta({ layout: 'customer-dashboard' })
 
 // Перенаправляем на страницу календаря по умолчанию
 navigateTo('/customer/calendar');
-
-// Или можно отобразить что-то простое, если не хотите перенаправлять сразу
-// definePageMeta({
-//   layout: 'customer-dashboard'
-// });
 </script>
 
 <template>
@@ -19,6 +17,4 @@ navigateTo('/customer/calendar');
   </div>
 </template>
 
-<style scoped>
-/* Стили будут взяты из layout */
-</style>
+

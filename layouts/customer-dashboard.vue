@@ -61,14 +61,17 @@ const mainContentTitle = computed(() => {
         <h1 class="h4 mb-0" style="font-family: var(--font-inter); font-weight: 700; color: var(--color-text-dark);">
           {{ mainContentTitle }}
         </h1>
-        <div class="dropdown">
-          <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-family: var(--font-inter);">
-            English
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="languageDropdown">
-            <li><a class="dropdown-item" href="#">English</a></li>
-            <li><a class="dropdown-item" href="#">Русский</a></li>
-          </ul>
+        <div class="d-flex align-items-center gap-3">
+          <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-family: var(--font-inter);">
+              English
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+              <li><a class="dropdown-item" href="#">English</a></li>
+              <li><a class="dropdown-item" href="#">Русский</a></li>
+            </ul>
+          </div>
+          <NuxtLink to="/logout" class="btn btn-outline-secondary">Выйти</NuxtLink>
         </div>
       </header>
 
@@ -80,73 +83,4 @@ const mainContentTitle = computed(() => {
   </div>
 </template>
 
-<style scoped>
-/* Используем существующие CSS переменные */
-:root {
-  --color-primary-green: #2d5016;
-  --color-primary-green-hover: #1a3009;
-  --color-secondary-green: #d4f4dd; /* Светло-зеленый для активного элемента сайдбара */
-  --color-pink: #ff6b9d;
-  --color-beige: #f5f1eb;
-  --color-text-muted: #6c757d;
-  --color-text-dark: #343a40; /* Для основного текста и заголовков */
-  --color-border: #dee2e6;
-  --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
 
-.bg-beige {
-  background-color: var(--color-beige);
-}
-
-.sidebar {
-  width: 280px; /* Ширина сайдбара */
-  min-width: 280px;
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.sidebar-nav .nav-link {
-  color: var(--color-text-dark); /* Default color for links */
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.sidebar-nav .nav-link:hover {
-  background-color: rgba(0, 0, 0, 0.03);
-}
-
-.sidebar-nav .nav-link.active-sidebar-link {
-  background-color: var(--color-secondary-green);
-  color: var(--color-primary-green);
-}
-
-.dashboard-header {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.dashboard-cards-container {
-  background-color: var(--color-beige);
-}
-
-/* Responsive adjustments */
-@media (max-width: 991.98px) {
-  .sidebar {
-    width: 100%;
-    min-width: unset;
-    height: auto;
-    border-right: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    position: relative;
-  }
-  .sidebar-header {
-    display: none;
-  }
-  .sidebar-nav {
-    display: none; /* Could be toggled with a menu button */
-  }
-  .dashboard-header {
-    justify-content: space-between;
-  }
-  .dashboard-cards-container {
-    padding: 1rem !important;
-  }
-}
-</style>
