@@ -1,8 +1,8 @@
 <script setup>
 import { ref } from 'vue';
-import { navigateTo } from '#app'; // Импортируем navigateTo для программной навигации
+import { navigateTo } from '#app'; // Import navigateTo for programmatic navigation
 
-const selectedService = ref(null); // Инициализируем как null, чтобы кнопка была неактивна по умолчанию
+const selectedService = ref(null); // Initialize as null so the button is disabled by default
 
 const services = [
   { id: 'Maid', title: 'Maid', description: 'Professional house cleaning services' },
@@ -14,15 +14,15 @@ const services = [
 
 const selectService = (serviceId) => {
   selectedService.value = serviceId;
-  console.log('Selected service:', selectedService.value); // Для отладки
+  console.log('Selected service:', selectedService.value); // For debugging
 };
 
 const handleContinue = () => {
   if (selectedService.value) {
-    // Если услуга выбрана, переходим на страницу деталей
+    // If a service is selected, go to the details page
     navigateTo('/book-service/details');
   }
-  // Если услуга не выбрана, кнопка будет disabled, и эта функция не вызовется
+  // If no service is selected, the button will be disabled and this function will not be called
 };
 </script>
 

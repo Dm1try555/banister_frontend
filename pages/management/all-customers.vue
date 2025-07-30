@@ -25,7 +25,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(customer, index) in allCustomers" :key="index">
+                <tr v-for="(customer, index) in customers" :key="index">
                   <td style="font-family: var(--font-inter); color: var(--color-text-dark);">{{ customer.name }}</td>
                   <td>
                     <div style="font-family: var(--font-inter); color: var(--color-text-dark); font-size: 0.9rem;">
@@ -62,23 +62,27 @@
   </template>
   
   <script setup>
-  import { ref, onMounted } from 'vue'
-  import { useApi } from '~/utils/api'
-  const api = useApi()
-  const customers = ref([])
-  const loading = ref(true)
-  const error = ref('')
+import { ref, onMounted } from 'vue'
+import { useApi } from '~/utils/api'
+import { definePageMeta } from '#imports'
 
-  onMounted(async () => {
-    try {
-      customers.value = await api.get('management/customers/')
-    } catch (e) {
-      error.value = 'Ошибка загрузки клиентов'
-    } finally {
-      loading.value = false
-    }
-  })
-  </script>
+definePageMeta({ layout: 'management-dashboard' })
+
+const api = useApi()
+const customers = ref([])
+const loading = ref(true)
+const error = ref('')
+
+onMounted(async () => {
+  try {
+    customers.value = await api.get('management/customers/')
+  } catch (e) {
+    error.value = 'Ошибка загрузки клиентов'
+  } finally {
+    loading.value = false
+  }
+})
+</script>
   
 
   

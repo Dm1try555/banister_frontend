@@ -11,14 +11,30 @@
   </button>
 </template>
 
-<script setup lang="ts">
-defineProps<{
-  type?: 'button' | 'submit' | 'reset',
-  variant?: string, // например, 'btn-primary-green', 'btn-outline-secondary'
-  disabled?: boolean,
-  customClass?: string | object | Array<string | object>,
-  customStyle?: string | Record<string, string>
-}>()
+<script setup>
+defineProps({
+  type: {
+    type: String,
+    default: 'button',
+    validator: (value) => ['button', 'submit', 'reset'].includes(value)
+  },
+  variant: {
+    type: String,
+    default: ''
+  },
+  disabled: {
+    type: Boolean,
+    default: false
+  },
+  customClass: {
+    type: [String, Object, Array],
+    default: ''
+  },
+  customStyle: {
+    type: [String, Object],
+    default: ''
+  }
+})
 
 defineEmits(['click'])
 </script> 

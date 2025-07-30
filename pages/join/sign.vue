@@ -45,12 +45,12 @@ const onSubmit = async (e) => {
       password: form.value.password,
       confirm_password: form.value.confirmPassword,
     })
-    // После успешной регистрации редиректим на страницу входа с автозаполнением
+    // After successful registration, redirect to registration success page
     router.push({
-      path: '/join/signin',
+      path: '/registration-success',
       query: {
         email: form.value.email,
-        password: form.value.password
+        role: activeTab.value
       }
     })
     return

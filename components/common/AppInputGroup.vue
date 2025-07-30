@@ -12,7 +12,7 @@
         :placeholder="placeholder"
         :value="modelValue"
         :style="inputStyle"
-        @input="$emit('update:modelValue', ($event.target as HTMLInputElement)?.value)"
+        @input="$emit('update:modelValue', $event.target?.value)"
         :readonly="readonly"
         :disabled="disabled"
         :required="required"
@@ -25,24 +25,68 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed } from 'vue'
-const props = defineProps<{
-  id?: string,
-  label?: string,
-  labelStyle?: string | Record<string, string>,
-  icon?: string,
-  iconSize?: string | number,
-  iconStyle?: string | Record<string, string>,
-  type?: string,
-  placeholder?: string,
-  modelValue?: string,
-  inputStyle?: string | Record<string, string>,
-  error?: string,
-  readonly?: boolean,
-  disabled?: boolean,
-  required?: boolean
-}>()
+
+const props = defineProps({
+  id: {
+    type: String,
+    default: ''
+  },
+  label: {
+    type: String,
+    default: ''
+  },
+  labelStyle: {
+    type: [String, Object],
+    default: ''
+  },
+  icon: {
+    type: String,
+    default: ''
+  },
+  iconSize: {
+    type: [String, Number],
+    default: 20
+  },
+  iconStyle: {
+    type: [String, Object],
+    default: ''
+  },
+  type: {
+    type: String,
+    default: 'text'
+  },
+  placeholder: {
+    type: String,
+    default: ''
+  },
+  modelValue: {
+    type: String,
+    default: ''
+  },
+  inputStyle: {
+    type: [String, Object],
+    default: ''
+  },
+  error: {
+    type: String,
+    default: ''
+  },
+  readonly: {
+    type: Boolean,
+    default: false
+  },
+  disabled: {
+    type: Boolean,
+    default: false
+  },
+  required: {
+    type: Boolean,
+    default: false
+  }
+})
+
 const emit = defineEmits(['update:modelValue'])
 const showPassword = ref(false)
 const isPassword = computed(() => props.type === 'password')

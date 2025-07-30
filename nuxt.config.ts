@@ -9,6 +9,22 @@ export default defineNuxtConfig({
     'bootstrap/dist/css/bootstrap.min.css'
   ],
 
+  // Development settings for hot reload
+  devServer: {
+    host: '0.0.0.0',
+    port: 3000
+  },
+
+  // Vite settings for faster hot reload
+  vite: {
+    server: {
+      watch: {
+        usePolling: true,
+        interval: 1000
+      }
+    }
+  },
+
   app: {
     head: {
       title: 'BANISTER - Trusted Home Staff',

@@ -6,9 +6,15 @@
   </div>
 </template>
 
-<script setup lang="ts">
-defineProps<{
-  customClass?: string
-  customStyle?: string | Record<string, string>
-}>()
+<script setup>
+defineProps({
+  customClass: {
+    type: String,
+    default: ''
+  },
+  customStyle: {
+    type: [String, Object],
+    default: ''
+  }
+})
 </script> 

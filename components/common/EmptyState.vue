@@ -10,17 +10,47 @@
   </div>
 </template>
 
-<script setup lang="ts">
-defineProps<{
-  icon?: string,
-  iconSize?: string | number,
-  iconStyle?: string | Record<string, string>,
-  iconCustomStyle?: string | Record<string, string>,
-  title?: string,
-  titleStyle?: string | Record<string, string>,
-  subtitle?: string,
-  subtitleStyle?: string | Record<string, string>,
-  description?: string,
-  descStyle?: string | Record<string, string>
-}>()
+<script setup>
+defineProps({
+  icon: {
+    type: String,
+    default: ''
+  },
+  iconSize: {
+    type: [String, Number],
+    default: 24
+  },
+  iconStyle: {
+    type: [String, Object],
+    default: ''
+  },
+  iconCustomStyle: {
+    type: [String, Object],
+    default: ''
+  },
+  title: {
+    type: String,
+    default: ''
+  },
+  titleStyle: {
+    type: [String, Object],
+    default: ''
+  },
+  subtitle: {
+    type: String,
+    default: ''
+  },
+  subtitleStyle: {
+    type: [String, Object],
+    default: ''
+  },
+  description: {
+    type: String,
+    default: ''
+  },
+  descStyle: {
+    type: [String, Object],
+    default: ''
+  }
+})
 </script> 
