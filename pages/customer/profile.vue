@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import AppInputGroup from '@/components/common/AppInputGroup.vue'
 import AppButton from '@/components/common/AppButton.vue'
 import AppCard from '@/components/common/AppCard.vue'
+import EmailVerificationBanner from '~/components/EmailVerificationBanner.vue'
 import { useApi } from '~/utils/api'
 import { definePageMeta } from '#imports'
 definePageMeta({ layout: 'customer-dashboard' })
@@ -76,6 +77,9 @@ onMounted(async () => {
 
 <template>
   <div class="d-flex flex-column flex-grow-1">
+    <!-- Email Verification Banner -->
+    <EmailVerificationBanner :user="profile" />
+    
     <!-- Personal Information Card -->
     <AppCard customClass="mb-4" :customStyle="'background-color: white; border-radius: 16px;'">
       <div class="card-body">

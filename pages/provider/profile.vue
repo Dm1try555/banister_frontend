@@ -5,7 +5,10 @@ import { definePageMeta } from '#imports'
 import AppCard from '@/components/common/AppCard.vue'
 import AppButton from '@/components/common/AppButton.vue'
 import AppInputGroup from '@/components/common/AppInputGroup.vue'
-import { Icon } from '@iconify/vue' // Assuming Icon component is from @iconify/vue
+import EmailVerificationBanner from '~/components/EmailVerificationBanner.vue'
+import { Icon } from '@iconify/vue'
+import { validateFile, createFilePreview, formatFileSize } from '~/utils/fileValidation'
+import { log } from '~/utils/logger'
 
 definePageMeta({ layout: 'provider-dashboard' })
 
@@ -25,8 +28,8 @@ const profile = ref({
   email: '',
   phone: '',
   bio: '',
-  experience_years: '0', // These will be read from and sent to provider_profile
-  hourly_rate: '0'       // These will be read from and sent to provider_profile
+  experience_years: '0',
+  hourly_rate: '0'
 })
 
 const profilePhoto = ref(null)
@@ -46,26 +49,33 @@ onMounted(async () => {
 const loadProfile = async () => {
   loading.value = true
   try {
-    const data = await api.get('auth/profile/')
-    console.log('Profile API response:', data)
+    const response = await api.get('auth/profile/')
+    log.api.response('GET', 'auth/profile', response)
 
-    // Set profile data with defaults
-    profile.value = {
-      first_name: data?.profile?.first_name || '',
-      last_name: data?.profile?.last_name || '',
-      email: data?.email || '',
-      phone: data?.phone || '',
-      bio: data?.profile?.bio || '',
-      // Read experience_years and hourly_rate from data.provider_profile
-      experience_years: String(data?.provider_profile?.experience_years || 0),
-      hourly_rate: String(data?.provider_profile?.hourly_rate || 0)
-    }
+         if (response && response.data) {
+       const data = response.data
+       
+       // Set profile data with defaults
+       profile.value = {
+         first_name: data?.profile?.first_name || '',
+         last_name: data?.profile?.last_name || '',
+         email: data?.email || '',
+         phone: data?.phone || '',
+         bio: data?.profile?.bio || '',
+         experience_years: String(data?.provider_profile?.experience_years || 0),
+         hourly_rate: String(data?.provider_profile?.hourly_rate || 0)
+       }
+       
+       log.debug('Loaded profile data:', profile.value)
 
-    // Check if user has profile photo
-    hasProfilePhoto.value = data?.has_required_profile_photo || false
-    photoUrl.value = data?.profile_photo_url || ''
+       // Check if user has profile photo
+       hasProfilePhoto.value = data?.has_required_profile_photo || false
+       // photoUrl will be set in checkProfilePhoto function
+     } else {
+       throw new Error(response?.error?.error_message || 'Failed to load profile')
+     }
   } catch (e) {
-    error.value = 'Ошибка загрузки профиля'
+    error.value = 'Ошибка загрузки профиля: ' + (e.message || 'Неизвестная ошибка')
     console.error('Profile loading error:', e)
   } finally {
     loading.value = false
@@ -74,10 +84,18 @@ const loadProfile = async () => {
 
 const checkProfilePhoto = async () => {
   try {
-    const photoData = await api.get('files/profile-photo/')
-    hasProfilePhoto.value = !!photoData?.photo_url
-    photoUrl.value = photoData?.photo_url || ''
+    const response = await api.get('files/profile-photo/')
+    log.api.response('GET', 'files/profile-photo', response)
+    
+         if (response && response.success && response.data) {
+       hasProfilePhoto.value = !!response.data.photo_url
+       photoUrl.value = response.data.photo_url || ''
+     } else {
+       hasProfilePhoto.value = false
+       photoUrl.value = ''
+     }
   } catch (e) {
+    console.error('Profile photo check error:', e)
     // If 404, no photo exists
     hasProfilePhoto.value = false
     photoUrl.value = ''
@@ -90,30 +108,50 @@ const saveProfile = async () => {
   success.value = ''
 
   try {
-    await api.put('auth/profile/', {
+    const response = await api.put('auth/profile/', {
+      email: profile.value.email,
+      phone: profile.value.phone,
       profile: {
         first_name: profile.value.first_name,
         last_name: profile.value.last_name,
         bio: profile.value.bio,
       },
-      phone: profile.value.phone,
-      // Send provider-specific fields under a new key 'provider_profile'
       provider_profile: {
         experience_years: parseInt(profile.value.experience_years) || 0,
         hourly_rate: parseFloat(profile.value.hourly_rate) || 0
       }
     })
-    success.value = 'Профиль успешно обновлен'
-  } catch (e) {
-    error.value = 'Ошибка сохранения профиля'
-    console.error('Profile saving error:', e)
-    // Attempt to parse and display the specific error message from the backend
-    if (e.message) {
-      error.value = e.message;
-    }
-  } finally {
-    saving.value = false
-  }
+
+         if (response && response.success) {
+       success.value = 'Профиль успешно обновлен'
+     } else {
+       throw new Error(response?.error?.error_message || 'Failed to update profile')
+     }
+     } catch (e) {
+     console.error('Profile saving error:', e)
+     
+     // Handle validation errors
+     if (e.message && e.message.includes('Failed to update profile:')) {
+       const errorMatch = e.message.match(/\{([^}]+)\}/)
+       if (errorMatch) {
+         try {
+           const fieldErrors = JSON.parse(errorMatch[0])
+           const errorMessages = Object.entries(fieldErrors)
+             .map(([field, errors]) => `${field}: ${Array.isArray(errors) ? errors[0] : errors}`)
+             .join(', ')
+           error.value = 'Ошибка валидации: ' + errorMessages
+         } catch {
+           error.value = 'Ошибка сохранения профиля: ' + e.message
+         }
+       } else {
+         error.value = 'Ошибка сохранения профиля: ' + e.message
+       }
+     } else {
+       error.value = 'Ошибка сохранения профиля: ' + (e.message || 'Неизвестная ошибка')
+     }
+   } finally {
+     saving.value = false
+   }
 }
 
 const triggerFileInput = () => {
@@ -127,31 +165,25 @@ const handleFileSelect = (event) => {
   }
 }
 
-const validateAndPreviewFile = (file) => {
+const validateAndPreviewFile = async (file) => {
   // Reset states
   error.value = ''
 
-  // Validate file type
-  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']
-  if (!allowedTypes.includes(file.type)) {
-    error.value = 'Пожалуйста, выберите файл изображения (JPG, PNG, GIF)'
+  // Validate file
+  const validation = validateFile(file)
+  if (!validation.isValid) {
+    error.value = validation.error || 'Invalid file'
     return
   }
 
-  // Validate file size (5MB)
-  const maxSize = 5 * 1024 * 1024 // 5MB in bytes
-  if (file.size > maxSize) {
-    error.value = 'Размер файла не должен превышать 5MB'
-    return
-  }
-
-  // Create preview
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    previewImage.value = e.target.result
+  try {
+    // Create preview
+    previewImage.value = await createFilePreview(file)
     selectedFile.value = file
+  } catch (err) {
+    error.value = 'Ошибка при создании предварительного просмотра'
+    log.error('File preview error:', err)
   }
-  reader.readAsDataURL(file)
 }
 
 const uploadProfilePhoto = async () => {
@@ -164,27 +196,29 @@ const uploadProfilePhoto = async () => {
     const formData = new FormData()
     formData.append('photo', selectedFile.value)
 
-    const response = await api.post('files/profile-photo/upload/', formData)
+    const response = await api.post('files/profile-photo/quick-change/', formData)
 
-    if (response.success) {
-      success.value = 'Фото профиля успешно загружено!'
-      hasProfilePhoto.value = true
-      photoUrl.value = response.data?.photo_url || ''
-      previewImage.value = null
-      selectedFile.value = null
-      showPhotoUpload.value = false
+              if (response && response.success) {
+       success.value = 'Фото профиля успешно загружено!'
+       hasProfilePhoto.value = true
+       photoUrl.value = response.data?.photo_url || ''
+       previewImage.value = null
+       selectedFile.value = null
+       showPhotoUpload.value = false
 
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        success.value = ''
-      }, 3000)
-    }
+       // Reload profile photo data
+       await checkProfilePhoto()
+
+       // Clear success message after 3 seconds
+       setTimeout(() => {
+         success.value = ''
+       }, 3000)
+     } else {
+       throw new Error(response?.error?.error_message || 'Upload failed')
+     }
   } catch (e) {
     console.error('Photo upload error:', e)
-    error.value = e.data?.error?.error_message || 'Ошибка загрузки фото. Попробуйте еще раз.'
-    if (e.message) {
-      error.value = e.message;
-    }
+    error.value = 'Ошибка загрузки фото: ' + (e.message || 'Попробуйте еще раз')
   } finally {
     uploadingPhoto.value = false
   }
@@ -192,20 +226,25 @@ const uploadProfilePhoto = async () => {
 
 const deleteProfilePhoto = async () => {
   try {
-    await api.delete('files/profile-photo/delete/')
-    hasProfilePhoto.value = false
-    photoUrl.value = ''
-    success.value = 'Фото профиля удалено'
+    const response = await api.delete('files/profile-photo/delete/')
+    
+              if (response && response.success) {
+       hasProfilePhoto.value = false
+       photoUrl.value = ''
+       success.value = 'Фото профиля удалено'
 
-    setTimeout(() => {
-      success.value = ''
-    }, 3000)
+       // Reload profile photo data
+       await checkProfilePhoto()
+
+       setTimeout(() => {
+         success.value = ''
+       }, 3000)
+     } else {
+       throw new Error(response?.error?.error_message || 'Failed to delete photo')
+     }
   } catch (e) {
     console.error('Photo deletion error:', e)
-    error.value = 'Ошибка удаления фото профиля'
-    if (e.message) {
-      error.value = e.message;
-    }
+    error.value = 'Ошибка удаления фото профиля: ' + (e.message || 'Неизвестная ошибка')
   }
 }
 
@@ -213,29 +252,30 @@ const deleteProfile = async () => {
   deleting.value = true
   error.value = ''
 
-  try {
-    // First try to delete the profile directly
-    await api.delete('auth/profile/')
-    success.value = 'Профиль успешно удален'
-    showDeleteConfirm.value = false
+     try {
+     const response = await api.delete('auth/profile/')
+     log.api.response('DELETE', 'auth/profile', response)
+     
+     if (response && response.success) {
+       success.value = 'Профиль успешно удален'
+       showDeleteConfirm.value = false
 
-    // Redirect to logout after a short delay
-    setTimeout(() => {
-      window.location.href = '/logout'
-    }, 2000)
+       // Redirect to logout after a short delay
+       setTimeout(() => {
+         window.location.href = '/logout'
+       }, 2000)
+     } else {
+       // Check if the error is about missing profile photo
+       if (response?.error?.error_message?.includes('Profile photo is required')) {
+         error.value = 'Для удаления профиля необходимо загрузить фото профиля. Пожалуйста, добавьте фото профиля и попробуйте снова.'
+         showPhotoUpload.value = true
+       } else {
+         throw new Error(response?.error?.error_message || 'Failed to delete profile')
+       }
+     }
   } catch (e) {
     console.error('Profile deletion error:', e)
-
-    // Check if the error is about missing profile photo
-    if (e.data?.error?.error_message?.includes('Profile photo is required')) {
-      error.value = 'Для удаления профиля необходимо загрузить фото профиля. Пожалуйста, добавьте фото профиля и попробуйте снова.'
-      showPhotoUpload.value = true
-    } else {
-      error.value = 'Ошибка удаления профиля: ' + (e.data?.error?.error_message || 'Неизвестная ошибка')
-    }
-    if (e.message) {
-      error.value = e.message;
-    }
+    error.value = 'Ошибка удаления профиля: ' + (e.message || 'Неизвестная ошибка')
   } finally {
     deleting.value = false
   }
@@ -271,6 +311,11 @@ const cancelPhotoUpload = () => {
       <h2 class="mb-4" style="font-family: var(--font-inter); font-weight: 700; color: var(--color-text-dark);">
         Мой профиль
       </h2>
+    </div>
+    
+    <!-- Email Verification Banner -->
+    <div class="col-12">
+      <EmailVerificationBanner :user="profile" />
     </div>
     <div v-if="loading" class="col-12 text-center py-5">
       <div class="spinner-border text-primary" role="status">
@@ -356,15 +401,16 @@ const cancelPhotoUpload = () => {
                 />
               </div>
 
-              <div class="col-md-6">
-                <AppInputGroup
-                  label="Email"
-                  type="email"
-                  v-model="profile.email"
-                  required
-                  disabled
-                />
-              </div>
+                             <div class="col-md-6">
+                 <AppInputGroup
+                   label="Email"
+                   type="email"
+                   v-model="profile.email"
+                   required
+                   disabled
+                   readonly
+                 />
+               </div>
 
               <div class="col-md-6">
                 <AppInputGroup
@@ -611,4 +657,4 @@ const cancelPhotoUpload = () => {
   object-fit: cover;
   border-radius: 8px;
 }
-</style>
+</style> 

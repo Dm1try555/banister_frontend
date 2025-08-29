@@ -28,8 +28,6 @@ const loadEarnings = async () => {
   loading.value = true
   try {
     const data = await api.get('dashboard/overview')
-    console.log('Earnings API response:', data)
-    
     // Set default values if data is not available
     earnings.value = {
       totalEarnings: data?.total_earnings || 0,
@@ -84,7 +82,7 @@ const loadEarnings = async () => {
                 <Icon name="heroicons:banknotes" size="24" />
               </div>
               <h4 class="mb-1" style="font-family: var(--font-inter); font-weight: 700; color: var(--color-text-dark);">
-                £{{ (earnings.totalEarnings || 0).toFixed(2) }}
+                £{{ (Number(earnings.totalEarnings) || 0).toFixed(2) }}
               </h4>
               <p class="mb-0 text-muted" style="font-family: var(--font-inter);">Total Earnings</p>
             </div>

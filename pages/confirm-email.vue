@@ -1,195 +1,203 @@
 <template>
-  <div class="min-vh-100 d-flex flex-column">
-    <main class="hero text-center py-5 flex-grow-1 d-flex flex-column justify-content-center bg-beige">
-      <div class="container-fluid px-4">
-        <div class="row justify-content-center">
-          <div class="col-12 col-md-8 col-lg-6">
-            <!-- Loading State -->
-            <div v-if="loading" class="text-center">
-              <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
+  <div class="container-fluid py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 col-md-8">
+        <div class="text-center">
+          <!-- Loading State -->
+          <div v-if="loading" class="py-5">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-4"
+                 style="width: 80px; height: 80px;">
+              <div class="spinner-border text-white" role="status">
+                <span class="visually-hidden">Загрузка...</span>
               </div>
-              <p class="mt-3" style="color: var(--color-text-muted);">Подтверждаем ваш email...</p>
             </div>
+            <h2 class="mb-3 fw-bold" style="font-family: var(--font-inter);">
+              Подтверждение email...
+            </h2>
+            <p class="text-muted">Пожалуйста, подождите</p>
+          </div>
+
+          <!-- Success State -->
+          <div v-else-if="success" class="py-5">
+            <div class="mb-4">
+              <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success text-white"
+                   style="width: 80px; height: 80px;">
+                <Icon name="heroicons:check" size="40" />
+              </div>
+            </div>
+
+            <h1 class="h2 mb-3 fw-bold text-success" style="font-family: var(--font-inter);">
+              Email подтвержден!
+            </h1>
             
-            <!-- Error State -->
-            <div v-if="!loading && errorMessage" class="text-center">
-              <div class="error-icon mb-4">
-                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger text-white" 
-                     style="width: 80px; height: 80px;">
-                  <Icon name="heroicons:x-mark" size="40" />
-                </div>
+            <p class="lead text-muted mb-4">
+              Ваш email адрес успешно подтвержден. Теперь вы можете войти в свой аккаунт.
+            </p>
+
+            <!-- User Info -->
+            <div v-if="userInfo" class="alert alert-info mb-4">
+              <Icon name="heroicons:user" size="20" class="me-2" />
+              <strong>Добро пожаловать, {{ userInfo.first_name }}!</strong>
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+              <NuxtLink to="/login" class="btn btn-success">
+                <Icon name="heroicons:arrow-right-on-rectangle" size="16" class="me-2" />
+                Войти в аккаунт
+              </NuxtLink>
+              
+              <NuxtLink to="/" class="btn btn-outline-primary">
+                <Icon name="heroicons:home" size="16" class="me-2" />
+                На главную
+              </NuxtLink>
+            </div>
+          </div>
+
+          <!-- Error State -->
+          <div v-else-if="error" class="py-5">
+            <div class="mb-4">
+              <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger text-white"
+                   style="width: 80px; height: 80px;">
+                <Icon name="heroicons:x-mark" size="40" />
               </div>
+            </div>
+
+            <h1 class="h2 mb-3 fw-bold text-danger" style="font-family: var(--font-inter);">
+              Ошибка подтверждения
+            </h1>
+            
+            <p class="lead text-muted mb-4">
+              {{ error }}
+            </p>
+
+            <!-- Actions -->
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+              <button 
+                class="btn btn-primary"
+                @click="resendConfirmation"
+                :disabled="resendLoading"
+              >
+                <Icon name="heroicons:arrow-path" size="16" class="me-2" />
+                {{ resendLoading ? 'Отправка...' : 'Отправить повторно' }}
+              </button>
               
-              <h1 class="hero-title mb-4" style="color: var(--color-text-dark);">
-                Ошибка подтверждения
-              </h1>
-              
-              <p class="hero-subtitle mb-5" style="color: var(--color-text-muted); font-size: 1.1rem;">
-                {{ errorMessage }}
-              </p>
-              
-              <div class="hero-buttons mb-5 d-flex flex-column flex-sm-row justify-content-center gap-4">
-                <AppButton
-                  variant="btn-nav-primary create-profile-btn btn-large-text d-flex align-items-center justify-content-center text-decoration-none"
-                  :customStyle="{ width: '250px', fontWeight: 700 }"
-                  @click="resendEmail"
-                >
-                  <Icon name="heroicons:envelope" size="20" class="me-2" />
-                  Отправить новое письмо
-                </AppButton>
-                <AppButton
-                  variant="btn-outline-secondary learn-more btn-large-text text-decoration-none d-flex align-items-center justify-content-center"
-                  :customStyle="{ width: '150px' }"
-                  @click="$router.push('/join/signin')"
-                >
-                  Войти в аккаунт
-                </AppButton>
-                <AppButton
-                  variant="btn-outline-secondary learn-more btn-large-text text-decoration-none d-flex align-items-center justify-content-center"
-                  :customStyle="{ width: '150px' }"
-                  @click="$router.push('/')"
-                >
-                  На главную
-                </AppButton>
-              </div>
+              <NuxtLink to="/login" class="btn btn-outline-secondary">
+                <Icon name="heroicons:arrow-right-on-rectangle" size="16" class="me-2" />
+                Войти в аккаунт
+              </NuxtLink>
             </div>
           </div>
         </div>
       </div>
-    </main>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import AppButton from '@/components/common/AppButton.vue'
-import { useApi } from '~/utils/api'
+import { useAuthApi } from '~/composables/useAuthApi'
 
+// Composables
 const route = useRoute()
 const router = useRouter()
-const api = useApi()
+const { verifyEmail, resendConfirmationEmail } = useAuthApi()
 
+// State
 const loading = ref(true)
-const errorMessage = ref('')
+const success = ref(false)
+const error = ref('')
+const resendLoading = ref(false)
+const userInfo = ref(null)
 
-onMounted(async () => {
-  const token = route.query.token
-  
+// Get query parameters
+const token = route.query.token
+const email = route.query.email
+
+// Methods
+const confirmEmail = async () => {
   if (!token) {
-    errorMessage.value = 'Отсутствует токен подтверждения'
+    error.value = 'Неверная ссылка подтверждения'
     loading.value = false
     return
   }
-  
+
   try {
-    console.log('Confirming email with token:', token)
+    const response = await verifyEmail(token)
     
-    // GET запрос для подтверждения email
-    const response = await api.get(`auth/email-confirm/verify/?token=${token}`)
-    
-    console.log('Email confirmation response:', response)
-    
-    if (response.success) {
-      // Обновляем данные пользователя в localStorage
-      try {
-        const userData = await api.get('auth/profile/');
-        if (userData.email_verified) {
-          // Обновляем флаг в localStorage
-          localStorage.setItem('email_verified', 'true');
-          // Очищаем флаг скрытия баннера
-          localStorage.removeItem('emailBannerDismissed');
-          // Принудительно обновляем данные пользователя
-          localStorage.setItem('user_email', userData.email);
-          
-          // Принудительно скрываем баннер, если пользователь находится на странице с баннером
-          if (window.location.pathname.startsWith('/customer')) {
-            // Обновляем localStorage для немедленного скрытия баннера
-            localStorage.setItem('emailBannerDismissed', 'true');
-            // Отправляем событие для обновления баннера без перезагрузки страницы
-            window.dispatchEvent(new StorageEvent('storage', {
-              key: 'email_verified',
-              newValue: 'true'
-            }));
-          }
-        }
-      } catch (profileError) {
-        console.warn('Failed to update user profile after email confirmation:', profileError);
-      }
+    if (response) {
+      success.value = true
+      userInfo.value = response.user || null
       
-      // Сразу перенаправляем на страницу благодарности
-      router.push('/email-confirmed')
-    } else {
-      errorMessage.value = response.message || 'Failed to verify email'
-      loading.value = false
+      // Redirect to registration success page with confirmed status
+      setTimeout(() => {
+        router.push({
+          path: '/registration-success',
+          query: {
+            email: email || response.user?.email,
+            role: response.user?.role || 'client',
+            confirmed: 'true'
+          }
+        })
+      }, 2000)
     }
-    
-  } catch (error) {
-    console.error('Email confirmation error:', error)
-    errorMessage.value = error.message
+  } catch (err) {
+    console.error('Email confirmation error:', err)
+    error.value = err.message || 'Ошибка при подтверждении email. Ссылка может быть недействительной или устаревшей.'
+  } finally {
     loading.value = false
   }
-})
+}
 
-const resendEmail = async () => {
+const resendConfirmation = async () => {
+  if (!email) {
+    error.value = 'Email адрес не найден'
+    return
+  }
+
+  resendLoading.value = true
   try {
-    // Для повторной отправки нужен email пользователя
-    let userEmail = localStorage.getItem('user_email');
-    
-    if (!userEmail) {
-      userEmail = prompt('Введите ваш email для повторной отправки письма:');
-      if (!userEmail) {
-        alert('Email не введен');
-        return;
-      }
-    }
-    
-    console.log('Resending email to:', userEmail)
-    
-    const response = await api.post('auth/email-confirm/request/', {
-      email: userEmail
-    })
-    
-    if (response.success) {
-      alert('Письмо для подтверждения отправлено повторно на ' + userEmail);
-      // Сохраняем email в localStorage
-      localStorage.setItem('user_email', userEmail);
-    } else {
-      alert('Ошибка при отправке письма: ' + (response.message || 'Неизвестная ошибка'));
-    }
-  } catch (error) {
-    console.error('Failed to resend email:', error)
-    alert('Error sending email: ' + error.message)
+    await resendConfirmationEmail(email)
+    error.value = 'Письмо с подтверждением отправлено повторно. Проверьте вашу почту.'
+  } catch (err) {
+    console.error('Resend confirmation error:', err)
+    error.value = 'Ошибка при отправке письма. Попробуйте позже.'
+  } finally {
+    resendLoading.value = false
   }
 }
+
+// Lifecycle
+onMounted(() => {
+  confirmEmail()
+})
+
+// SEO
+useHead({
+  title: 'Подтверждение email - Banister',
+  meta: [
+    { name: 'description', content: 'Подтверждение email адреса в Banister' }
+  ]
+})
 </script>
 
 <style scoped>
-.error-icon {
-  animation: fadeInUp 0.6s ease-out;
+.alert {
+  border-left: 4px solid var(--color-primary-green);
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+.btn {
+  min-width: 160px;
+}
+
+@media (max-width: 576px) {
+  .d-flex.flex-sm-row {
+    flex-direction: column;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  .btn {
+    width: 100%;
   }
 }
-
-.hero-title {
-  animation: fadeInUp 0.6s ease-out 0.2s both;
-}
-
-.hero-subtitle {
-  animation: fadeInUp 0.6s ease-out 0.4s both;
-}
-
-.hero-buttons {
-  animation: fadeInUp 0.6s ease-out 0.6s both;
-}
-</style> 
+</style>

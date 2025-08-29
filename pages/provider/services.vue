@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useApi } from '~/utils/api'
 import { definePageMeta } from '#imports'
+import { log } from '~/utils/logger'
 import AppCard from '@/components/common/AppCard.vue'
 import AppButton from '@/components/common/AppButton.vue'
 
@@ -15,7 +16,7 @@ const services = ref([])
 onMounted(async () => {
   try {
     const data = await api.get('services/')
-    console.log('Services API response:', data)
+          log.api.response('GET', 'services', data)
     
     // Handle different response formats
     let servicesData = []

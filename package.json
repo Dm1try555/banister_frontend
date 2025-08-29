@@ -12,6 +12,7 @@
   "dependencies": {
     "@nuxt/icon": "^1.15.0",
     "canvas-confetti": "^1.9.3",
+    "firebase": "^12.2.0",
     "js-cookie": "^3.0.1",
     "nuxt": "^4.0.0",
     "usebootstrap": "^3.5.107",

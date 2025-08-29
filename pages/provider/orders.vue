@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useApi } from '~/utils/api'
 import { definePageMeta } from '#imports'
+import { log } from '~/utils/logger'
 import AppCard from '@/components/common/AppCard.vue'
 import AppButton from '@/components/common/AppButton.vue'
 
@@ -29,7 +30,7 @@ const loadOrders = async () => {
   loading.value = true
   try {
     const data = await api.get('bookings/')
-    console.log('Orders API response:', data)
+          log.api.response('GET', 'orders', data)
     
     // Handle different response formats
     let ordersData = []

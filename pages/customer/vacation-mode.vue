@@ -59,10 +59,10 @@
   const vacationMessage = ref('');
   
   const saveVacationSettings = () => {
-    console.log('Vacation Mode Active:', isVacationModeActive.value);
-    console.log('Start Date:', vacationStartDate.value);
-    console.log('End Date:', vacationEndDate.value);
-    console.log('Message:', vacationMessage.value);
+    
+    
+    
+    
     // Here you would typically send this data to your backend
     alert('Vacation settings saved!');
   };

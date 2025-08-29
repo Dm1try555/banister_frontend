@@ -24,6 +24,7 @@ const sidebarLinks = [
 
 // Вычисляемое свойство для заголовка основной области
 const mainContentTitle = computed(() => {
+  if (!route.path) return 'Dashboard';
   const currentLink = sidebarLinks.find(link => route.path.startsWith(link.path));
   return currentLink ? currentLink.name : 'Dashboard'; // По умолчанию 'Dashboard'
 });
@@ -31,48 +32,47 @@ const mainContentTitle = computed(() => {
 // Email verification banner logic
 const showEmailBanner = ref(false); // По умолчанию скрыта, показываем только для авторизованных пользователей
 const userEmail = ref(''); // Будет заполнено из API
+const isComponentMounted = ref(true); // Track component mount state
 
 // Функция для принудительного обновления баннера (экспортируем для использования в других компонентах)
 const forceUpdateBanner = async () => {
-  console.log('Force updating banner status...');
   await updateBannerStatus();
 };
+
+
 
 // Функция для обновления статуса баннера
 const updateBannerStatus = async () => {
   try {
     const userData = await api.get('auth/profile/');
+    if (!userData) return;
+    
     userEmail.value = userData.email;
     
-    const emailVerified = userData.email_verified;
-    const bannerDismissed = localStorage.getItem('emailBannerDismissed') === 'true';
-    const localStorageEmailVerified = localStorage.getItem('email_verified') === 'true';
-    
-    console.log('updateBannerStatus:', {
-      email: userData.email,
-      emailVerified,
-      localStorageEmailVerified,
-      bannerDismissed,
-      showEmailBanner: typeof showEmailBanner !== 'undefined'
-    });
-    
-    // Проверяем, что компонент все еще существует
-    if (typeof showEmailBanner !== 'undefined') {
-      // Баннер показывается только если email НЕ подтвержден И баннер НЕ скрыт
-      // Если email подтвержден в API ИЛИ в localStorage, баннер не показывается
-      const shouldShowBanner = !emailVerified && !localStorageEmailVerified && !bannerDismissed;
-      showEmailBanner.value = shouldShowBanner;
-      console.log('Banner visibility set to:', showEmailBanner.value);
-    }
-    
-    // Если email подтвержден, принудительно скрываем баннер
-    if (emailVerified || localStorageEmailVerified) {
+    // Если email подтвержден, сразу скрываем баннер
+    if (userData.email_verified) {
       localStorage.setItem('email_verified', 'true');
       localStorage.setItem('emailBannerDismissed', 'true');
-      // Принудительно скрываем баннер если email подтвержден
-      if (typeof showEmailBanner !== 'undefined') {
+      if (showEmailBanner && isComponentMounted.value) {
         showEmailBanner.value = false;
       }
+      return;
+    }
+    
+    // Проверяем localStorage
+    const localStorageEmailVerified = localStorage.getItem('email_verified') === 'true';
+    const bannerDismissed = localStorage.getItem('emailBannerDismissed') === 'true';
+    
+    if (localStorageEmailVerified || bannerDismissed) {
+      if (showEmailBanner && isComponentMounted.value) {
+        showEmailBanner.value = false;
+      }
+      return;
+    }
+    
+    // Показываем баннер только если email не подтвержден
+    if (showEmailBanner && isComponentMounted.value) {
+      showEmailBanner.value = true;
     }
   } catch (error) {
     console.error('Failed to update banner status:', error);
@@ -80,7 +80,7 @@ const updateBannerStatus = async () => {
 };
 
 const dismissEmailBanner = () => {
-  if (typeof showEmailBanner !== 'undefined') {
+  if (showEmailBanner && typeof showEmailBanner.value !== 'undefined' && isComponentMounted.value) {
     showEmailBanner.value = false;
   }
   // Здесь можно сохранить состояние в localStorage или отправить на сервер
@@ -88,8 +88,6 @@ const dismissEmailBanner = () => {
 };
 
 const resendVerificationEmail = async () => {
-  console.log('Layout: resendVerificationEmail called with email:', userEmail.value);
-  
   if (!userEmail.value) {
     alert('Email not found. Please log in again.');
     return;
@@ -100,14 +98,14 @@ const resendVerificationEmail = async () => {
       email: userEmail.value
     });
     
-    console.log('Layout: API response:', response);
-    
     if (response.success) {
       alert('Verification email sent to ' + userEmail.value);
       // Обновляем статус баннера после отправки
-      await updateBannerStatus().catch(error => {
-        console.warn('Failed to update banner status after email send:', error);
-      });
+      if (showEmailBanner) {
+        await updateBannerStatus().catch(error => {
+          console.warn('Failed to update banner status after email send:', error);
+        });
+      }
     } else {
       alert('Error sending email: ' + (response.message || 'Unknown error'));
     }
@@ -140,6 +138,9 @@ const goToProfileSettings = () => {
 
 // Проверяем авторизацию и загружаем данные пользователя
 onMounted(async () => {
+  isComponentMounted.value = true;
+  
+
   const token = localStorage.getItem('access_token');
   if (token) {
     try {
@@ -148,29 +149,33 @@ onMounted(async () => {
       if (localStorageEmailVerified) {
         // Если email уже подтвержден в localStorage, принудительно скрываем баннер
         localStorage.setItem('emailBannerDismissed', 'true');
-        if (typeof showEmailBanner !== 'undefined') {
+        if (showEmailBanner && typeof showEmailBanner.value !== 'undefined' && isComponentMounted.value) {
           showEmailBanner.value = false;
         }
       }
       
-      await updateBannerStatus();
+      if (showEmailBanner && isComponentMounted.value) {
+        await updateBannerStatus();
+      }
       
       // Добавляем слушатель изменений localStorage
       const handleStorageChange = (e) => {
         if (e.key === 'email_verified' || e.key === 'emailBannerDismissed') {
-          console.log('localStorage changed:', e.key, e.newValue);
-          updateBannerStatus().catch(error => {
-            console.warn('Failed to update banner status after localStorage change:', error);
-          });
+          if (showEmailBanner && isComponentMounted.value) {
+            showEmailBanner.value = false;
+          }
         }
       };
       
       window.addEventListener('storage', handleStorageChange);
       
       // Очистка слушателя при размонтировании компонента
-      onUnmounted(() => {
+      const cleanup = () => {
+        isComponentMounted.value = false;
         window.removeEventListener('storage', handleStorageChange);
-      });
+      };
+      
+      onUnmounted(cleanup);
       
     } catch (error) {
       console.error('Failed to load user data:', error);
@@ -198,10 +203,12 @@ onMounted(async () => {
 // Обновляем статус баннера при изменении маршрута
 watch(() => route.path, async () => {
   const token = localStorage.getItem('access_token');
-  if (token) {
-    await updateBannerStatus().catch(error => {
+  if (token && showEmailBanner && route.path && isComponentMounted.value) {
+    try {
+      await updateBannerStatus();
+    } catch (error) {
       console.warn('Failed to update banner status on route change:', error);
-    });
+    }
   }
 });
 </script>
@@ -224,7 +231,7 @@ watch(() => route.path, async () => {
             <NuxtLink 
               :to="link.path" 
               class="nav-link d-flex align-items-center py-2 px-3 rounded" 
-              :class="{ 'active-sidebar-link': route.path.startsWith(link.path) }"
+              :class="{ 'active-sidebar-link': route.path && route.path.startsWith(link.path) }"
               style="font-family: var(--font-inter); font-weight: 500; text-decoration: none;"
             >
               <Icon :name="link.icon" size="20" class="me-3" />
@@ -252,6 +259,7 @@ watch(() => route.path, async () => {
               <li><a class="dropdown-item" href="#">Русский</a></li>
             </ul>
           </div>
+
           <NuxtLink to="/logout" class="btn btn-outline-secondary">Logout</NuxtLink>
         </div>
       </header>

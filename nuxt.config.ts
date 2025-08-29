@@ -64,14 +64,29 @@ export default defineNuxtConfig({
     transpile: ['bootstrap']
   },
 
-  nitro: {
-    preset: 'netlify'
-  },
-
   runtimeConfig: {
     apiSecret: '',
     public: {
       apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:8000/api/v1/',
+      firebaseApiKey: process.env.FIREBASE_API_KEY || '',
+      firebaseAuthDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
+      firebaseProjectId: process.env.FIREBASE_PROJECT_ID || '',
+      firebaseStorageBucket: process.env.FIREBASE_STORAGE_BUCKET || '',
+      firebaseMessagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '',
+      firebaseAppId: process.env.FIREBASE_APP_ID || '',
+      firebaseVapidKey: process.env.FIREBASE_VAPID_KEY || ''
+    }
+  },
+
+  // CORS configuration for development
+  nitro: {
+    preset: 'netlify',
+    devProxy: {
+      '/api/': {
+        target: 'http://localhost:8000/api/',
+        changeOrigin: true,
+        prependPath: true,
+      }
     }
   }
 });

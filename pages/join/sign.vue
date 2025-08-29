@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useApi } from '~/utils/api'
+import { useAuthApi } from '~/composables/useAuthApi'
 import AppInputGroup from '@/components/common/AppInputGroup.vue'
 import AppButton from '@/components/common/AppButton.vue'
 
@@ -16,35 +15,52 @@ const form = ref({
   password: '',
   confirmPassword: '',
 })
-const loading = ref(false)
-const error = ref('')
-const errorMessages = ref([])
 
 const router = useRouter()
-const { post } = useApi()
+const { register, loading, error } = useAuthApi()
 
 const onSubmit = async (e) => {
   e.preventDefault()
-  error.value = ''
-  errorMessages.value = []
-  if (form.value.password !== form.value.confirmPassword) {
-    error.value = 'Passwords do not match'
+  
+  // Валидация полей
+  if (!form.value.first_name.trim()) {
     return
   }
-  loading.value = true
+  if (!form.value.last_name.trim()) {
+    return
+  }
+  if (!form.value.email.trim()) {
+    return
+  }
+  if (!form.value.phone.trim()) {
+    return
+  }
+  if (!form.value.password) {
+    return
+  }
+  if (form.value.password !== form.value.confirmPassword) {
+    return
+  }
+  if (form.value.password.length < 3) {
+    return
+  }
+  
   try {
-    let endpoint = ''
-    if (activeTab.value === 'client') endpoint = 'auth/register/customer/'
-    else if (activeTab.value === 'provider') endpoint = 'auth/register/provider/'
-    else throw new Error('Unknown role')
-    await post(endpoint, {
+    // Определяем роль пользователя
+    let role = 'customer'
+    if (activeTab.value === 'provider') role = 'service_provider'
+    
+    const response = await register({
+      username: form.value.email, // Используем email как username
+      email: form.value.email,
       first_name: form.value.first_name,
       last_name: form.value.last_name,
-      email: form.value.email,
-      phone: form.value.phone,
+      phone_number: form.value.phone,
       password: form.value.password,
-      confirm_password: form.value.confirmPassword,
+      password_confirm: form.value.confirmPassword,
+      role: role
     })
+    
     // After successful registration, redirect to registration success page
     router.push({
       path: '/registration-success',
@@ -53,11 +69,9 @@ const onSubmit = async (e) => {
         role: activeTab.value
       }
     })
-    return
   } catch (e) {
-    errorMessages.value = [e.message || e]
-  } finally {
-    loading.value = false
+    // Ошибка автоматически обрабатывается в useAuthApi
+    console.error('Registration failed:', e)
   }
 }
 </script>

@@ -1,5 +1,5 @@
 <script setup>
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { ref, computed, onMounted, watch } from 'vue';
 import EmailVerificationBanner from '@/components/common/EmailVerificationBanner.vue';
 import { useAuth } from '~/composables/useAuth';
@@ -33,7 +33,6 @@ const userEmail = computed(() => user.value?.email || '');
 
 // Function to force update banner
 const forceUpdateBanner = async () => {
-  console.log('Force updating banner status...');
   await updateBannerStatus();
 };
 
@@ -48,18 +47,9 @@ const updateBannerStatus = async () => {
     const bannerDismissed = localStorage.getItem('emailBannerDismissed') === 'true';
     const localStorageEmailVerified = localStorage.getItem('email_verified') === 'true';
     
-    console.log('updateBannerStatus:', {
-      email: user.value?.email,
-      emailVerified,
-      localStorageEmailVerified,
-      bannerDismissed
-    });
-    
     // Show banner only if email is NOT verified AND banner is NOT dismissed
     const shouldShowBanner = !emailVerified && !localStorageEmailVerified && !bannerDismissed;
     showEmailBanner.value = shouldShowBanner;
-    console.log('Banner visibility set to:', showEmailBanner.value);
-    
     // If email is verified, force hide banner
     if (emailVerified || localStorageEmailVerified) {
       localStorage.setItem('email_verified', 'true');
@@ -77,8 +67,6 @@ const dismissEmailBanner = () => {
 };
 
 const resendVerificationEmail = async () => {
-  console.log('Layout: resendVerificationEmail called with email:', userEmail.value);
-  
   if (!userEmail.value) {
     alert('Email not found. Please log in again.');
     return;
@@ -86,7 +74,6 @@ const resendVerificationEmail = async () => {
   
   try {
     await requestEmailConfirmation(userEmail.value);
-    console.log('Email verification request sent successfully');
     alert('Verification email has been sent! Please check your inbox.');
   } catch (error) {
     console.error('Failed to send verification email:', error);

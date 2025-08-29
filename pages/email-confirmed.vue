@@ -51,7 +51,9 @@ onMounted(async () => {
       role.value = userData.role
       localStorage.setItem('user_role', userData.role)
     }
-  } catch {}
+  } catch (error) {
+    console.warn('Failed to update profile data:', error)
+  }
 })
 
 const goToDashboard = () => {

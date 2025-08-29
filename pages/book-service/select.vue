@@ -14,7 +14,7 @@ const services = [
 
 const selectService = (serviceId) => {
   selectedService.value = serviceId;
-  console.log('Selected service:', selectedService.value); // For debugging
+   // For debugging
 };
 
 const handleContinue = () => {

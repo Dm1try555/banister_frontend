@@ -180,7 +180,7 @@ function parseValidationErrors(errorMessage) {
     
     return errorMessages.length > 0 ? errorMessages.join('. ') : 'Validation error occurred'
   } catch (e) {
-    console.log('Could not parse validation errors:', e)
+    
     return errorMessage
   }
 }
@@ -198,6 +198,8 @@ async function login() {
       loginUrl = 'auth/login/provider/'
     } else if (activeAccountType.value === 'management-support') {
       loginUrl = 'auth/login/management/'
+    } else {
+      throw new Error('Please select an account type')
     }
 
     const res = await api.post(loginUrl, form.value)
@@ -216,8 +218,8 @@ async function login() {
       router.push('/')
     }
   } catch (e) {
-    console.log('Full error object:', e)
-    console.log('Error message:', e.message)
+    
+    
     
     // Try to parse the error message for better user experience
     let userFriendlyError = 'Login error. Please check your email and password.'
@@ -239,7 +241,7 @@ async function login() {
     }
     
     error.value = userFriendlyError
-    console.log('Final error.value:', error.value)
+    
   } finally {
     loading.value = false
   }

@@ -11,9 +11,13 @@
 
   onMounted(async () => {
     try {
-      payments.value = await api.get('payments/')
+      const response = await api.get('payments/')
+      if (response) {
+        payments.value = response
+      }
     } catch (e) {
-      error.value = 'Ошибка загрузки платежей'
+      console.error('Error loading payments:', e)
+      error.value = 'Error loading payments'
     } finally {
       loading.value = false
     }
@@ -29,7 +33,21 @@
             Payment History
           </h2>
   
-          <div class="table-responsive">
+          <div v-if="loading" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          
+          <div v-else-if="error" class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+          
+          <div v-else-if="payments.length === 0" class="text-center text-muted py-4">
+            No payment history available.
+          </div>
+          
+          <div v-else class="table-responsive">
             <table class="table table-borderless payment-history-table">
               <thead>
                 <tr>
@@ -41,13 +59,13 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(payment, index) in paymentHistory" :key="index">
-                  <td style="font-family: var(--font-inter); color: var(--color-text-dark);">{{ payment.date }}</td>
-                  <td style="font-family: var(--font-inter); color: var(--color-text-dark);">{{ payment.description }}</td>
-                  <td style="font-family: var(--font-inter); font-weight: 600; color: var(--color-primary-green);">{{ payment.amount }}</td>
+                <tr v-for="(payment, index) in payments" :key="index">
+                  <td style="font-family: var(--font-inter); color: var(--color-text-dark);">{{ payment.date || 'No date' }}</td>
+                  <td style="font-family: var(--font-inter); color: var(--color-text-dark);">{{ payment.description || 'No description' }}</td>
+                  <td style="font-family: var(--font-inter); font-weight: 600; color: var(--color-primary-green);">{{ payment.amount || 'N/A' }}</td>
                   <td>
-                    <span class="badge rounded-pill" :style="{ backgroundColor: payment.statusColor, color: 'white', fontFamily: 'var(--font-inter)' }">
-                      {{ payment.status }}
+                    <span class="badge rounded-pill" :style="{ backgroundColor: payment.statusColor || '#6c757d', color: 'white', fontFamily: 'var(--font-inter)' }">
+                      {{ payment.status || 'Unknown' }}
                     </span>
                   </td>
                   <td>

@@ -75,7 +75,7 @@ const goToNextMonth = () => {
 const selectDay = (day) => {
   if (day !== null) {
     selectedDay.value = day
-    console.log('Selected date:', new Date(currentYear.value, currentMonth.value, day))
+    )
   }
 }
 

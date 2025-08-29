@@ -22,8 +22,6 @@ const loadConversations = async () => {
   loading.value = true
   try {
     const data = await api.get('message/')
-    console.log('Messages API response:', data)
-    
     // Handle different response formats
     let conversationsData = []
     if (Array.isArray(data)) {

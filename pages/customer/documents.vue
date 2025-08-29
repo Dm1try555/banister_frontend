@@ -10,9 +10,13 @@ const error = ref('')
 
 onMounted(async () => {
   try {
-    documents.value = await api.get('documents/')
+    const response = await api.get('documents/')
+    if (response) {
+      documents.value = response
+    }
   } catch (e) {
-    error.value = 'Ошибка загрузки документов'
+    console.error('Error loading documents:', e)
+    error.value = 'Error loading documents'
   } finally {
     loading.value = false
   }
@@ -31,6 +35,23 @@ async function uploadDocument(event) {
     error.value = 'Ошибка загрузки файла'
   }
 }
+
+function viewDocument(url) {
+  if (url) {
+    window.open(url, '_blank')
+  }
+}
+
+function downloadDocument(url) {
+  if (url) {
+    const link = document.createElement('a')
+    link.href = url
+    link.download = ''
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+}
 </script>
 
 <template>
@@ -42,13 +63,27 @@ async function uploadDocument(event) {
             Your Documents
           </h2>
   
-          <div class="list-group document-list">
+          <div v-if="loading" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          
+          <div v-else-if="error" class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+          
+          <div v-else-if="documents.length === 0" class="text-center text-muted py-4" style="font-family: var(--font-inter);">
+            No documents available.
+          </div>
+          
+          <div v-else class="list-group document-list">
             <div v-for="(doc, index) in documents" :key="index" class="list-group-item d-flex justify-content-between align-items-center p-3 mb-3 rounded" style="background-color: #f8f9fa;">
               <div class="d-flex align-items-center">
-                <Icon :name="doc.icon" size="24" style="color: var(--color-primary-green);" class="me-3" />
+                <Icon :name="doc.icon || 'heroicons:document-text'" size="24" style="color: var(--color-primary-green);" class="me-3" />
                 <div>
-                  <h6 class="mb-1" style="font-family: var(--font-inter); font-weight: 500; color: var(--color-text-dark);">{{ doc.name }}</h6>
-                  <small style="font-family: var(--font-inter); font-size: 0.85rem; color: var(--color-text-muted);">{{ doc.date }} • {{ doc.size }}</small>
+                  <h6 class="mb-1" style="font-family: var(--font-inter); font-weight: 500; color: var(--color-text-dark);">{{ doc.name || 'Unnamed Document' }}</h6>
+                  <small style="font-family: var(--font-inter); font-size: 0.85rem; color: var(--color-text-muted);">{{ doc.date || 'No date' }} • {{ doc.size || 'Unknown size' }}</small>
                 </div>
               </div>
               <div class="d-flex gap-2">
@@ -59,9 +94,6 @@ async function uploadDocument(event) {
                   Download
                 </button>
               </div>
-            </div>
-            <div v-if="documents.length === 0" class="text-center text-muted py-4" style="font-family: var(--font-inter);">
-              No documents available.
             </div>
           </div>
         </div>

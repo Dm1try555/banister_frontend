@@ -1,12 +1,10 @@
 <script setup>
-// Этот компонент будет использоваться как базовая страница для /management
-import { navigateTo } from '#app';
 import { definePageMeta } from '#imports'
 
-definePageMeta({ layout: 'management-dashboard' })
-
-// Перенаправляем на страницу all-customers по умолчанию
-navigateTo('/management/all-customers');
+definePageMeta({ 
+  layout: 'management-dashboard',
+  middleware: 'redirects'
+})
 </script>
 
 <template>
@@ -15,7 +13,3 @@ navigateTo('/management/all-customers');
     <p style="font-family: var(--font-inter); color: var(--color-text-muted);">Please select an option from the sidebar.</p>
   </div>
 </template>
-
-<style scoped>
-/* Стили будут взяты из layout */
-</style>
