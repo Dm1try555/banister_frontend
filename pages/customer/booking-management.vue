@@ -80,7 +80,7 @@ const error = ref('')
 
 onMounted(async () => {
   try {
-    bookings.value = await api.get('bookings/')
+    bookings.value = await api.get('/bookings/')
   } catch (e) {
     error.value = 'Ошибка загрузки бронирований'
   } finally {

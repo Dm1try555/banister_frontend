@@ -3,7 +3,7 @@
 // ============================================================================
 
 export interface Login {
-  username_or_email: string
+  email: string
   password: string
 }
 
@@ -42,11 +42,16 @@ export interface User {
   first_name: string
   last_name: string
   phone_number?: string
-  role: 'customer' | 'service_provider' | 'management' | 'admin' | 'super_admin' | 'hr' | 'supervisor'
-  is_active: boolean
-  is_verified: boolean
-  date_joined: string
-  last_login?: string
+  location?: string
+  role: 'super_admin' | 'admin' | 'hr' | 'supervisor' | 'customer' | 'service_provider'
+  email_verified: boolean
+  firebase_token?: string
+  stripe_account_id?: string
+  provider_verified?: boolean
+  provider_rating?: number
+  provider_hourly_rate?: number
+  created_at: string
+  updated_at: string
   profile_photo?: string
 }
 
@@ -72,9 +77,24 @@ export interface UserUpdate {
 }
 
 export interface LoginResponse {
-  access: string
-  refresh: string
+  access_token: string
+  refresh_token: string
   user: User
+}
+
+export interface FCMTokenRegister {
+  token: string
+}
+
+export interface FCMTokenUnregister {
+  token: string
+}
+
+export interface FCMToken {
+  id: number
+  user: number
+  token: string
+  created_at: string
 }
 
 export interface RefreshResponse {

@@ -113,6 +113,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRoute } from 'vue-router'
 import { useApi } from '~/utils/api'
+import { useErrorHandler } from '~/composables/useErrorHandler'
 import AppInputGroup from '@/components/common/AppInputGroup.vue'
 import AppButton from '@/components/common/AppButton.vue'
 
@@ -139,51 +140,7 @@ onMounted(() => {
   localStorage.removeItem('user_email')
 })
 
-// Function to parse validation errors into readable format
-function parseValidationErrors(errorMessage) {
-  try {
-    // Try to parse the error_message as JSON if it's a string
-    let validationErrors
-    if (typeof errorMessage === 'string') {
-      // Remove extra quotes and parse
-      const cleanedMessage = errorMessage.replace(/^'|'$/g, '').replace(/\\'/g, "'")
-      validationErrors = JSON.parse(cleanedMessage)
-    } else {
-      validationErrors = errorMessage
-    }
-    
-    const errorMessages = []
-    
-    // Extract field errors
-    for (const [field, errors] of Object.entries(validationErrors)) {
-      if (Array.isArray(errors)) {
-        errors.forEach(error => {
-          let message = ""
-          if (typeof error === "string") {
-            message = error
-          } else if (error.string) {
-            message = error.string
-          } else if (error.message) {
-            message = error.message
-          } else {
-            // Extract message from ErrorDetail format
-            const errorStr = error.toString()
-            const match = errorStr.match(/string='([^']+)'/)
-            message = match ? match[1] : errorStr
-          }
-          errorMessages.push(message)
-        })
-      } else if (typeof errors === "string") {
-        errorMessages.push(errors)
-      }
-    }
-    
-    return errorMessages.length > 0 ? errorMessages.join('. ') : 'Validation error occurred'
-  } catch (e) {
-    
-    return errorMessage
-  }
-}
+
 
 async function login() {
   error.value = ''
@@ -191,56 +148,28 @@ async function login() {
   
   try {
     // Determine correct login URL based on account type
-    let loginUrl = ''
-    if (activeAccountType.value === 'client') {
-      loginUrl = 'auth/login/customer/'
-    } else if (activeAccountType.value === 'service-provider') {
-      loginUrl = 'auth/login/provider/'
-    } else if (activeAccountType.value === 'management-support') {
-      loginUrl = 'auth/login/management/'
-    } else {
-      throw new Error('Please select an account type')
-    }
-
-    const res = await api.post(loginUrl, form.value)
-    localStorage.setItem('access_token', res.access)
+    const res = await api.post('/auth/login/', {
+      email: form.value.email,
+      password: form.value.password
+    })
+    localStorage.setItem('access_token', res.access_token)
     
-    const profile = await api.get('auth/profile/')
+    const profile = await api.get('/auth/profile/')
     
     // Redirect based on role
     if (profile.role === 'customer') {
       router.push('/customer')
-    } else if (profile.role === 'provider') {
+    } else if (profile.role === 'service_provider') {
       router.push('/provider')
-    } else if (profile.role === 'management') {
+    } else if (['super_admin', 'admin', 'hr', 'supervisor'].includes(profile.role)) {
       router.push('/management')
     } else {
       router.push('/')
     }
   } catch (e) {
-    
-    
-    
-    // Try to parse the error message for better user experience
-    let userFriendlyError = 'Login error. Please check your email and password.'
-    
-    if (e.message) {
-      // Check if it's a validation error (contains field validation info)
-      if (e.message.includes('ErrorDetail') || e.message.includes('This field may not be blank')) {
-        userFriendlyError = parseValidationErrors(e.message)
-      } else if (e.message.includes('Invalid credentials') || e.message.includes('authentication')) {
-        userFriendlyError = 'Invalid email or password. Please try again.'
-      } else if (e.message.includes('Connection error')) {
-        userFriendlyError = 'Connection error. Please check your internet connection.'
-      } else if (e.message.includes('Timeout')) {
-        userFriendlyError = 'Request timeout. Please try again.'
-      } else {
-        // For other errors, try to extract meaningful message
-        userFriendlyError = e.message
-      }
-    }
-    
-    error.value = userFriendlyError
+    // Use the new error handler
+    const { getUserFriendlyError } = useErrorHandler()
+    error.value = getUserFriendlyError(e)
     
   } finally {
     loading.value = false

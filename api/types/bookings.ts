@@ -4,38 +4,38 @@
 
 export interface Booking {
   id: number
-  service: number
   customer: number
-  provider?: number
-  preferred_date: string
-  preferred_time: string
+  service: number
+  provider: number
+  location?: string
+  preferred_date?: string
+  preferred_time?: string
   scheduled_datetime?: string
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed'
   notes?: string
+  total_price?: number
   created_at: string
-  updated_at: string
 }
 
 export interface BookingCreate {
-  service: number
   customer: number
-  provider?: number
-  preferred_date: string
-  preferred_time: string
+  service: number
+  provider: number
+  location?: string
+  preferred_date?: string
+  preferred_time?: string
   scheduled_datetime?: string
-  status?: 'pending' | 'confirmed' | 'completed' | 'cancelled'
   notes?: string
 }
 
 export interface BookingUpdate {
-  service?: number
-  customer?: number
-  provider?: number
+  location?: string
   preferred_date?: string
   preferred_time?: string
   scheduled_datetime?: string
-  status?: 'pending' | 'confirmed' | 'completed' | 'cancelled'
+  status?: 'pending' | 'confirmed' | 'cancelled' | 'completed'
   notes?: string
+  total_price?: number
 }
 
 export interface PaginatedResponse<T> {

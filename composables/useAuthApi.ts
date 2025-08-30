@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { ref, computed } from 'vue'
-import { authApi } from '~/api/services/auth'
+import { authEndpoints } from '~/utils/apiEndpoints'
 import type { 
   Login, 
   UserCreate, 
@@ -33,7 +33,7 @@ export function useAuthApi() {
   const login = async (credentials: Login): Promise<LoginResponse | null> => {
     loading.value = true
     try {
-      const response = await authApi.login(credentials)
+      const response = await authEndpoints.login(credentials)
       
       // Save tokens and user data
       saveTokens(response.access, response.refresh)
@@ -55,7 +55,7 @@ export function useAuthApi() {
   const register = async (userData: UserCreate): Promise<{ user: User; message: string } | null> => {
     loading.value = true
     try {
-      const response = await authApi.register(userData)
+      const response = await authEndpoints.register(userData)
       return response
     } catch (error) {
       const errorMessage = handleApiError(error, 'Registration')
@@ -87,7 +87,7 @@ export function useAuthApi() {
   const getProfile = async (): Promise<User | null> => {
     loading.value = true
     try {
-      const response = await authApi.getProfile()
+      const response = await authEndpoints.getProfile()
       user.value = response
       return response
     } catch (error) {
@@ -104,7 +104,7 @@ export function useAuthApi() {
   const updateProfile = async (userData: UserUpdate): Promise<UserUpdate | null> => {
     loading.value = true
     try {
-      const response = await authApi.updateProfile(userData)
+      const response = await authEndpoints.updateProfile(userData)
       // Refresh user data
       await getProfile()
       return response
@@ -122,7 +122,7 @@ export function useAuthApi() {
   const partialUpdateProfile = async (userData: UserUpdate): Promise<UserUpdate | null> => {
     loading.value = true
     try {
-      const response = await authApi.partialUpdateProfile(userData)
+      const response = await authEndpoints.updateProfile(userData)
       // Refresh user data
       await getProfile()
       return response
@@ -140,7 +140,7 @@ export function useAuthApi() {
   const deleteProfile = async (): Promise<void> => {
     loading.value = true
     try {
-      await authApi.deleteProfile()
+      await authEndpoints.deleteProfile()
       await logout()
     } catch (error) {
       const errorMessage = handleApiError(error, 'Delete Profile')
@@ -156,7 +156,7 @@ export function useAuthApi() {
   const requestPasswordReset = async (data: PasswordResetRequest): Promise<void> => {
     loading.value = true
     try {
-      await authApi.requestPasswordReset(data)
+      await authEndpoints.requestPasswordReset(data)
     } catch (error) {
       const errorMessage = handleApiError(error, 'Password Reset Request')
       throw new Error(errorMessage)
@@ -171,7 +171,7 @@ export function useAuthApi() {
   const confirmPasswordReset = async (data: PasswordResetConfirm): Promise<void> => {
     loading.value = true
     try {
-      await authApi.confirmPasswordReset(data)
+      await authEndpoints.confirmPasswordReset(data)
     } catch (error) {
       const errorMessage = handleApiError(error, 'Password Reset Confirm')
       throw new Error(errorMessage)
@@ -186,7 +186,7 @@ export function useAuthApi() {
   const sendVerificationEmail = async (data: SendVerificationEmail): Promise<void> => {
     loading.value = true
     try {
-      await authApi.sendVerificationEmail(data)
+      await authEndpoints.sendVerificationEmail(data)
     } catch (error) {
       const errorMessage = handleApiError(error, 'Send Verification Email')
       throw new Error(errorMessage)
@@ -201,7 +201,7 @@ export function useAuthApi() {
   const verifyEmail = async (data: VerifyEmail): Promise<void> => {
     loading.value = true
     try {
-      await authApi.verifyEmail(data)
+      await authEndpoints.verifyEmail(data)
     } catch (error) {
       const errorMessage = handleApiError(error, 'Verify Email')
       throw new Error(errorMessage)
@@ -213,10 +213,10 @@ export function useAuthApi() {
   /**
    * Upload profile photo
    */
-  const uploadPhoto = async (data: ProfilePhotoUpload): Promise<string | null> => {
+  const uploadPhoto = async (data: FormData): Promise<string | null> => {
     loading.value = true
     try {
-      const response = await authApi.uploadPhoto(data)
+      const response = await authEndpoints.uploadPhoto(data)
       // Refresh user data to get updated photo
       await getProfile()
       return response.profile_photo_url
@@ -234,7 +234,7 @@ export function useAuthApi() {
   const registerFCMToken = async (tokenData: { token: string; device_type: string }): Promise<any> => {
     loading.value = true
     try {
-      const response = await authApi.registerFCMToken(tokenData)
+      const response = await authEndpoints.registerFCMToken(tokenData)
       return response
     } catch (error) {
       const errorMessage = handleApiError(error, 'Register FCM Token')
@@ -250,7 +250,7 @@ export function useAuthApi() {
   const unregisterFCMToken = async (tokenData: { token: string }): Promise<any> => {
     loading.value = true
     try {
-      const response = await authApi.unregisterFCMToken(tokenData)
+      const response = await authEndpoints.unregisterFCMToken(tokenData)
       return response
     } catch (error) {
       const errorMessage = handleApiError(error, 'Unregister FCM Token')
@@ -266,7 +266,7 @@ export function useAuthApi() {
   const resendConfirmationEmail = async (email: string): Promise<void> => {
     loading.value = true
     try {
-      await authApi.resendConfirmationEmail(email)
+      await authEndpoints.sendVerificationEmail({ email })
     } catch (error) {
       const errorMessage = handleApiError(error, 'Resend Confirmation Email')
       throw new Error(errorMessage)

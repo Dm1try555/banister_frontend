@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: banister_frontend_dev
+    environment:
+      - NUXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
+      - NUXT_HOST=0.0.0.0
+      - NUXT_PORT=3000
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.nuxt
+    command: npm run dev
+    stdin_open: true
+    tty: true
+    restart: unless-stopped

@@ -1,6 +1,6 @@
 import { ref, computed, readonly } from 'vue'
-import { dashboardApi } from '~/utils/apiEndpoints'
-import type { DashboardStats } from '~/utils/apiEndpoints'
+import { dashboardEndpoints } from '~/utils/apiEndpoints'
+import type { DashboardStats } from '~/api/types/dashboard'
 
 export const useDashboard = () => {
   const overview = ref<DashboardStats | null>(null)
@@ -18,7 +18,7 @@ export const useDashboard = () => {
     try {
       isLoading.value = true
       error.value = null
-      const data = await dashboardApi.getOverview()
+      const data = await dashboardEndpoints.getCustomerDashboard()
       overview.value = data
       return data
     } catch (err) {
@@ -35,7 +35,7 @@ export const useDashboard = () => {
     try {
       isLoading.value = true
       error.value = null
-      const data = await dashboardApi.getStatistics()
+      const data = await dashboardEndpoints.getProviderDashboard()
       statistics.value = data
       return data
     } catch (err) {
@@ -53,11 +53,11 @@ export const useDashboard = () => {
       isLoading.value = true
       error.value = null
       const [overviewData, statisticsData] = await Promise.all([
-        dashboardApi.getOverview().catch(err => {
+        dashboardEndpoints.getCustomerDashboard().catch(err => {
           console.error('Failed to load overview:', err)
           return null
         }),
-        dashboardApi.getStatistics().catch(err => {
+        dashboardEndpoints.getProviderDashboard().catch(err => {
           console.error('Failed to load statistics:', err)
           return null
         })

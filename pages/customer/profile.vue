@@ -34,7 +34,7 @@ async function deleteProfile() {
   }
   deletingProfile.value = true
   try {
-    await api.delete('auth/profile/')
+    await api.delete('/auth/profile/')
     // Clear localStorage and redirect to home page
     localStorage.clear()
     router.push('/')
@@ -59,7 +59,7 @@ onMounted(async () => {
   }
   
   try {
-    profile.value = await api.get('auth/profile/')
+    profile.value = await api.get('/auth/profile/')
   } catch (e) {
     error.value = 'Profile loading error'
     // Если ошибка авторизации, перенаправляем на логин

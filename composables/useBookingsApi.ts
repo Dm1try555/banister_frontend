@@ -2,7 +2,7 @@
 // Bookings API Composable
 // ============================================================================
 
-import { bookingsApi } from '~/api/services/bookings'
+import { bookingEndpoints } from '~/utils/apiEndpoints'
 import type { 
   Booking, 
   BookingCreate, 
@@ -19,7 +19,7 @@ export function useBookingsApi() {
    */
   const getBookings = async (params?: { page?: number; page_size?: number; search?: string; status?: string; date_from?: string; date_to?: string }): Promise<PaginatedResponse<Booking>> => {
     return await baseApi.executeApiCall(
-      () => bookingsApi.getBookings(params),
+      () => bookingEndpoints.getBookings(params),
       'Get Bookings'
     ) as PaginatedResponse<Booking>
   }
@@ -29,7 +29,7 @@ export function useBookingsApi() {
    */
   const createBooking = async (bookingData: BookingCreate): Promise<BookingCreate | null> => {
     return await baseApi.createItem(
-      bookingsApi.createBooking,
+      bookingEndpoints.createBooking,
       bookingData,
       'Create Booking'
     )
@@ -40,7 +40,7 @@ export function useBookingsApi() {
    */
   const getBooking = async (id: number): Promise<Booking | null> => {
     return await baseApi.getItem(
-      bookingsApi.getBooking,
+      bookingEndpoints.getBooking,
       id,
       'Get Booking'
     )
@@ -51,7 +51,7 @@ export function useBookingsApi() {
    */
   const updateBooking = async (id: number, bookingData: BookingUpdate): Promise<BookingUpdate | null> => {
     return await baseApi.updateItem(
-      bookingsApi.updateBooking,
+      bookingEndpoints.updateBooking,
       id,
       bookingData,
       'Update Booking'
@@ -63,7 +63,7 @@ export function useBookingsApi() {
    */
   const partialUpdateBooking = async (id: number, bookingData: BookingUpdate): Promise<BookingUpdate | null> => {
     return await baseApi.updateItem(
-      bookingsApi.partialUpdateBooking,
+      bookingEndpoints.updateBooking,
       id,
       bookingData,
       'Partial Update Booking'
@@ -75,7 +75,7 @@ export function useBookingsApi() {
    */
   const deleteBooking = async (id: number): Promise<void> => {
     await baseApi.deleteItem(
-      bookingsApi.deleteBooking,
+      bookingEndpoints.deleteBooking,
       id,
       'Delete Booking'
     )

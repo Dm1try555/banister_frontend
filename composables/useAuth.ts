@@ -1,8 +1,10 @@
 import { ref, computed } from 'vue'
-import { authApi, apiUtils } from '~/utils/apiEndpoints'
-import type { User } from '~/utils/apiEndpoints'
+import { authEndpoints } from '~/utils/apiEndpoints'
+import { useStorage } from './useStorage'
+import type { User } from '~/api/types/auth'
 
 export const useAuth = () => {
+  const { saveTokens, saveUserRole, getTokens, clearTokens } = useStorage()
   const user = ref<User | null>(null)
   const isAuthenticated = ref(false)
   const isLoading = ref(false)
@@ -10,13 +12,13 @@ export const useAuth = () => {
 
   // Computed properties
   const userRole = computed(() => user.value?.role || null)
-  const isProvider = computed(() => userRole.value === 'provider')
+  const isProvider = computed(() => userRole.value === 'service_provider')
   const isCustomer = computed(() => userRole.value === 'customer')
-  const isManagement = computed(() => userRole.value === 'management')
+  const isManagement = computed(() => ['super_admin', 'admin', 'hr', 'supervisor'].includes(userRole.value || ''))
 
   // Initialize auth state
   const initAuth = async () => {
-    const tokens = apiUtils.getTokens()
+    const tokens = getTokens()
     if (tokens.access) {
       isAuthenticated.value = true
       await loadUser()
@@ -28,7 +30,7 @@ export const useAuth = () => {
     try {
       isLoading.value = true
       error.value = null
-      const userData = await authApi.getProfile()
+      const userData = await authEndpoints.getProfile()
       user.value = userData
       isAuthenticated.value = true
     } catch (err) {
@@ -45,10 +47,10 @@ export const useAuth = () => {
     try {
       isLoading.value = true
       error.value = null
-      const response = await authApi.loginCustomer(email, password)
+      const response = await authEndpoints.login({ email, password })
       
-      apiUtils.saveTokens(response.access, response.refresh)
-      apiUtils.saveUserRole(response.role)
+      saveTokens(response.access_token, response.refresh_token)
+      saveUserRole(response.user.role)
       
       isAuthenticated.value = true
       await loadUser()
@@ -67,10 +69,10 @@ export const useAuth = () => {
     try {
       isLoading.value = true
       error.value = null
-      const response = await authApi.loginProvider(email, password)
+      const response = await authEndpoints.login({ email, password })
       
-      apiUtils.saveTokens(response.access, response.refresh)
-      apiUtils.saveUserRole(response.role)
+      saveTokens(response.access_token, response.refresh_token)
+      saveUserRole(response.user.role)
       
       isAuthenticated.value = true
       await loadUser()
@@ -89,10 +91,10 @@ export const useAuth = () => {
     try {
       isLoading.value = true
       error.value = null
-      const response = await authApi.loginManagement(email, password)
+      const response = await authEndpoints.login({ email, password })
       
-      apiUtils.saveTokens(response.access, response.refresh)
-      apiUtils.saveUserRole(response.role)
+      saveTokens(response.access_token, response.refresh_token)
+      saveUserRole(response.user.role)
       
       isAuthenticated.value = true
       await loadUser()
@@ -112,7 +114,7 @@ export const useAuth = () => {
     try {
       isLoading.value = true
       error.value = null
-      const response = await authApi.registerCustomer(userData)
+      const response = await authEndpoints.register(userData)
       return response
     } catch (err) {
       console.error('Customer registration failed:', err)
@@ -127,7 +129,7 @@ export const useAuth = () => {
     try {
       isLoading.value = true
       error.value = null
-      const response = await authApi.registerProvider(userData)
+      const response = await authEndpoints.register(userData)
       return response
     } catch (err) {
       console.error('Provider registration failed:', err)
@@ -142,7 +144,7 @@ export const useAuth = () => {
     try {
       isLoading.value = true
       error.value = null
-      const response = await authApi.registerManagement(userData)
+      const response = await authEndpoints.register(userData)
       return response
     } catch (err) {
       console.error('Management registration failed:', err)
@@ -157,7 +159,7 @@ export const useAuth = () => {
   const logout = async () => {
     try {
       if (isAuthenticated.value) {
-        await authApi.logout()
+        await authEndpoints.logout()
       }
     } catch (err) {
       console.error('Logout error:', err)
@@ -165,7 +167,7 @@ export const useAuth = () => {
       // Clear state regardless of API call success
       user.value = null
       isAuthenticated.value = false
-      apiUtils.clearTokens()
+      clearTokens()
     }
   }
 
@@ -174,7 +176,7 @@ export const useAuth = () => {
     try {
       isLoading.value = true
       error.value = null
-      const updatedUser = await authApi.updateProfile(data)
+      const updatedUser = await authEndpoints.updateProfile(data)
       user.value = updatedUser
       return updatedUser
     } catch (err) {
@@ -191,7 +193,7 @@ export const useAuth = () => {
     try {
       isLoading.value = true
       error.value = null
-      const response = await authApi.requestEmailConfirmation(email)
+      const response = await authEndpoints.sendVerificationEmail({ email })
       return response
     } catch (err) {
       console.error('Email confirmation request failed:', err)
@@ -206,7 +208,7 @@ export const useAuth = () => {
     try {
       isLoading.value = true
       error.value = null
-      const response = await authApi.verifyEmail(token)
+      const response = await authEndpoints.verifyEmail({ token })
       // Reload user to get updated verification status
       await loadUser()
       return response
@@ -222,13 +224,13 @@ export const useAuth = () => {
   // Token refresh
   const refreshToken = async () => {
     try {
-      const tokens = apiUtils.getTokens()
+      const tokens = getTokens()
       if (!tokens.refresh) {
         throw new Error('No refresh token available')
       }
 
-      const response = await authApi.refreshToken(tokens.refresh)
-      apiUtils.saveTokens(response.access, response.refresh)
+      const response = await authEndpoints.refreshToken({ refresh: tokens.refresh })
+      saveTokens(response.access_token, response.refresh_token)
       return response
     } catch (err) {
       console.error('Token refresh failed:', err)

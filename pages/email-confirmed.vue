@@ -46,7 +46,7 @@ const role = ref(localStorage.getItem('user_role') || 'customer')
 // After email confirmation, update role from profile
 onMounted(async () => {
   try {
-    const userData = await api.get('auth/profile/')
+    const userData = await api.get('/auth/profile/')
     if (userData.role) {
       role.value = userData.role
       localStorage.setItem('user_role', userData.role)

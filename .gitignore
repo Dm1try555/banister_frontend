@@ -22,3 +22,14 @@ logs
 .env
 .env.*
 !.env.example
+
+
+banister_backend/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Temporary files
+*.tmp
+*.temp

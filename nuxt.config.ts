@@ -1,4 +1,5 @@
 export default defineNuxtConfig({
+  compatibilityDate: '2025-08-30',
   modules: [
     '@nuxt/icon',
     'usebootstrap',
@@ -67,7 +68,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     apiSecret: '',
     public: {
-      apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:8000/api/v1/',
+      apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:8000/api/v1',
       firebaseApiKey: process.env.FIREBASE_API_KEY || '',
       firebaseAuthDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
       firebaseProjectId: process.env.FIREBASE_PROJECT_ID || '',

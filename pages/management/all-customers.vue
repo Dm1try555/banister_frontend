@@ -75,7 +75,7 @@ const error = ref('')
 
 onMounted(async () => {
   try {
-    customers.value = await api.get('management/customers/')
+    customers.value = await api.get('/admin/users/')
   } catch (e) {
     error.value = 'Ошибка загрузки клиентов'
   } finally {

@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import type { ErrorResponse, ApiError, ErrorCode } from '~/api/types/error'
 
 // Use Nuxt runtime config for API base URL
 const config = useRuntimeConfig()
@@ -14,35 +15,32 @@ function getToken(): string | null {
 type HeadersObj = Record<string, string>
 type QueryParams = Record<string, any>
 
-// Function to parse and format API errors
+// Function to parse and format API errors based on Django backend format
 function parseApiError(errorText: string): string {
   try {
-    const errorObj = JSON.parse(errorText)
+    const errorObj: ApiError = JSON.parse(errorText)
     
-    // Handle Banister custom error format
-    if (errorObj?.description) {
-      return errorObj.description
+    // Handle custom Banister error format with error codes
+    if (errorObj?.error) {
+      const errorResponse = errorObj.error as ErrorResponse
+      return errorResponse.description || errorResponse.title || 'An error occurred'
     }
     
-    if (errorObj?.title) {
-      return errorObj.title
+    // Handle field-specific validation errors
+    if (errorObj?.errors) {
+      const firstError = Object.values(errorObj.errors)[0]
+      if (Array.isArray(firstError) && firstError.length > 0) {
+        return firstError[0]
+      }
     }
     
     // Handle standard Django DRF errors
-    if (errorObj?.error?.error_message) {
-      return errorObj.error.error_message
-    }
-    
-    if (errorObj?.error) {
-      return errorObj.error
+    if (errorObj?.detail) {
+      return errorObj.detail
     }
     
     if (errorObj?.message) {
       return errorObj.message
-    }
-    
-    if (errorObj?.detail) {
-      return errorObj.detail
     }
     
     return errorText

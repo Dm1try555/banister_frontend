@@ -49,7 +49,7 @@ onMounted(async () => {
 const loadProfile = async () => {
   loading.value = true
   try {
-    const response = await api.get('auth/profile/')
+    const response = await api.get('/auth/profile/')
     log.api.response('GET', 'auth/profile', response)
 
          if (response && response.data) {
@@ -84,7 +84,7 @@ const loadProfile = async () => {
 
 const checkProfilePhoto = async () => {
   try {
-    const response = await api.get('files/profile-photo/')
+    const response = await api.get('/auth/profile/')
     log.api.response('GET', 'files/profile-photo', response)
     
          if (response && response.success && response.data) {
@@ -253,7 +253,7 @@ const deleteProfile = async () => {
   error.value = ''
 
      try {
-     const response = await api.delete('auth/profile/')
+     const response = await api.delete('/auth/profile/')
      log.api.response('DELETE', 'auth/profile', response)
      
      if (response && response.success) {

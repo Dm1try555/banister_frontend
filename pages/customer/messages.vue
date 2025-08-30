@@ -10,7 +10,7 @@ const error = ref('')
 
 onMounted(async () => {
   try {
-    messages.value = await api.get('message/')
+    messages.value = await api.get('/chat/messages/')
   } catch (e) {
     error.value = 'Ошибка загрузки сообщений'
   } finally {

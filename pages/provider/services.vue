@@ -15,7 +15,7 @@ const services = ref([])
 
 onMounted(async () => {
   try {
-    const data = await api.get('services/')
+    const data = await api.get('/services/')
           log.api.response('GET', 'services', data)
     
     // Handle different response formats

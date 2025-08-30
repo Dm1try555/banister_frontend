@@ -78,7 +78,6 @@ const goToNextMonth = () => {
 const selectDay = (day) => {
   if (day !== null) {
     selectedDay.value = day;
-    );
   }
 };
 
@@ -86,7 +85,7 @@ const selectDay = (day) => {
 const upcomingServices = ref([
   { name: 'Maria Rodriguez', service: 'Maid', time: '09:00 AM - 3 hours', date: '15/01/2024' },
   { name: 'John Smith', service: 'Gardener', time: '02:00 PM - 2 hours', date: '16/01/2024' },
-  { name: 'Chef Antoine', service: 'Chef', time: '06:00 PM - 2 hours', date: '17/01/2024' },
+  { name: 'Chef Antoine', service: 'Chef', time: '06:00 PM - 2 hours', date: '17/01/2024' }
 ]);
 </script>
 

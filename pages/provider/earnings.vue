@@ -27,7 +27,7 @@ onMounted(async () => {
 const loadEarnings = async () => {
   loading.value = true
   try {
-    const data = await api.get('dashboard/overview')
+    const data = await api.get('/dashboard/customer/')
     // Set default values if data is not available
     earnings.value = {
       totalEarnings: data?.total_earnings || 0,

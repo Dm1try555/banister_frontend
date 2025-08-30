@@ -1,11 +1,14 @@
+import type { ErrorResponse, ApiError, ErrorCode } from '~/api/types/error'
+
 /**
  * Centralized error handling composable
  * Provides consistent error parsing and user-friendly messages
+ * Updated for Django backend with error codes
  */
 export const useErrorHandler = () => {
   /**
    * Parse API error response and return user-friendly message
-   * Handles Django DRF error formats and custom Banister error format
+   * Handles Django DRF error formats and custom Banister error format with error codes
    */
   const parseApiError = (error: any): string => {
     // Handle different error formats
@@ -18,30 +21,27 @@ export const useErrorHandler = () => {
       }
     }
 
-    // Handle Banister custom error format
-    if (error?.description) {
-      return error.description
+    // Handle custom Banister error format with error codes
+    if (error?.error) {
+      const errorResponse = error.error as ErrorResponse
+      return errorResponse.description || errorResponse.title || 'An error occurred'
     }
 
-    if (error?.title) {
-      return error.title
+    // Handle field-specific validation errors
+    if (error?.errors) {
+      const firstError = Object.values(error.errors)[0]
+      if (Array.isArray(firstError) && firstError.length > 0) {
+        return firstError[0]
+      }
     }
 
     // Handle standard Django DRF errors
-    if (error?.error?.error_message) {
-      return error.error.error_message
-    }
-
-    if (error?.error) {
-      return error.error
+    if (error?.detail) {
+      return error.detail
     }
 
     if (error?.message) {
       return error.message
-    }
-
-    if (error?.detail) {
-      return error.detail
     }
 
     // Handle field validation errors

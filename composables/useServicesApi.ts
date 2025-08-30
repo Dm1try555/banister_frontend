@@ -2,7 +2,7 @@
 // Services API Composable
 // ============================================================================
 
-import { servicesApi } from '~/api/services/services'
+import { serviceEndpoints } from '~/utils/apiEndpoints'
 import type { 
   Service, 
   ServiceCreate, 
@@ -20,7 +20,7 @@ export function useServicesApi() {
    */
   const getServices = async (params?: ServiceSearchParams): Promise<PaginatedResponse<Service>> => {
     return await baseApi.executeApiCall(
-      () => servicesApi.getServices(params),
+      () => serviceEndpoints.getServices(params),
       'Get Services'
     ) as PaginatedResponse<Service>
   }
@@ -30,7 +30,7 @@ export function useServicesApi() {
    */
   const createService = async (serviceData: ServiceCreate): Promise<ServiceCreate | null> => {
     return await baseApi.createItem(
-      servicesApi.createService,
+      serviceEndpoints.createService,
       serviceData,
       'Create Service'
     )
@@ -41,7 +41,7 @@ export function useServicesApi() {
    */
   const getService = async (id: number): Promise<Service | null> => {
     return await baseApi.getItem(
-      servicesApi.getService,
+      serviceEndpoints.getService,
       id,
       'Get Service'
     )
@@ -52,7 +52,7 @@ export function useServicesApi() {
    */
   const updateService = async (id: number, serviceData: ServiceUpdate): Promise<ServiceUpdate | null> => {
     return await baseApi.updateItem(
-      servicesApi.updateService,
+      serviceEndpoints.updateService,
       id,
       serviceData,
       'Update Service'
@@ -64,7 +64,7 @@ export function useServicesApi() {
    */
   const partialUpdateService = async (id: number, serviceData: ServiceUpdate): Promise<ServiceUpdate | null> => {
     return await baseApi.updateItem(
-      servicesApi.partialUpdateService,
+      serviceEndpoints.updateService,
       id,
       serviceData,
       'Partial Update Service'
@@ -76,7 +76,7 @@ export function useServicesApi() {
    */
   const deleteService = async (id: number): Promise<void> => {
     await baseApi.deleteItem(
-      servicesApi.deleteService,
+      serviceEndpoints.deleteService,
       id,
       'Delete Service'
     )

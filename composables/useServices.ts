@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import { servicesApi } from '~/utils/apiEndpoints'
-import type { Service } from '~/utils/apiEndpoints'
+import { serviceEndpoints } from '~/utils/apiEndpoints'
+import type { Service } from '~/api/types/services'
 import { useDataLoader } from '~/composables/useDataLoader'
 import { log } from '~/utils/logger'
 
@@ -31,7 +31,7 @@ export const useServices = () => {
     try {
       setLoading(true)
       clearError()
-      const data = await servicesApi.getServices(search, ordering)
+      const data = await serviceEndpoints.getServices({ search, ordering })
       log.api.response('GET', 'services', data)
       
       setData(data)
@@ -50,7 +50,7 @@ export const useServices = () => {
     try {
       setLoading(true)
       clearError()
-      const data = await servicesApi.getService(id)
+      const data = await serviceEndpoints.getService(id)
       log.api.response('GET', `services/${id}`, data)
       setSingleData(data)
       return currentService.value
@@ -68,7 +68,7 @@ export const useServices = () => {
     try {
       setLoading(true)
       clearError()
-      const newService = await servicesApi.createService(serviceData)
+      const newService = await serviceEndpoints.createService(serviceData)
       log.api.response('POST', 'services', newService)
       addItem(newService)
       return newService
@@ -86,7 +86,7 @@ export const useServices = () => {
     try {
       setLoading(true)
       clearError()
-      const updatedService = await servicesApi.updateService(id, serviceData)
+      const updatedService = await serviceEndpoints.updateService(id, serviceData)
       log.api.response('PUT', `services/${id}`, updatedService)
       
       updateItem(id, updatedService)
@@ -109,7 +109,7 @@ export const useServices = () => {
     try {
       setLoading(true)
       clearError()
-      const updatedService = await servicesApi.patchService(id, serviceData)
+      const updatedService = await serviceEndpoints.updateService(id, serviceData)
       log.api.response('PATCH', `services/${id}`, updatedService)
       
       updateItem(id, updatedService)
@@ -132,7 +132,7 @@ export const useServices = () => {
     try {
       setLoading(true)
       clearError()
-      await servicesApi.deleteService(id)
+      await serviceEndpoints.deleteService(id)
       log.api.response('DELETE', `services/${id}`, null)
       
       removeItem(id)

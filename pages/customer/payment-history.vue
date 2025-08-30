@@ -11,7 +11,7 @@
 
   onMounted(async () => {
     try {
-      const response = await api.get('payments/')
+      const response = await api.get('/payments/')
       if (response) {
         payments.value = response
       }

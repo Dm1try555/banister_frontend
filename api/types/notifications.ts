@@ -4,26 +4,21 @@
 
 export interface Notification {
   id: number
-  title: string
-  message: string
-  type: 'info' | 'success' | 'warning' | 'error'
-  is_read: boolean
   user: number
+  notification_type: string
+  data: Record<string, any>
+  is_read: boolean
   created_at: string
-  updated_at: string
 }
 
 export interface NotificationCreate {
-  title: string
-  message: string
-  type: 'info' | 'success' | 'warning' | 'error'
   user: number
+  notification_type: string
+  data?: Record<string, any>
 }
 
 export interface NotificationUpdate {
-  title?: string
-  message?: string
-  type?: 'info' | 'success' | 'warning' | 'error'
+  notification_type?: string
+  data?: Record<string, any>
   is_read?: boolean
-  user?: number
 }

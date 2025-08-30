@@ -29,7 +29,7 @@ onMounted(async () => {
 const loadOrders = async () => {
   loading.value = true
   try {
-    const data = await api.get('bookings/')
+    const data = await api.get('/bookings/')
           log.api.response('GET', 'orders', data)
     
     // Handle different response formats

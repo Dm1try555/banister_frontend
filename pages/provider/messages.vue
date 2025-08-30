@@ -21,7 +21,7 @@ onMounted(async () => {
 const loadConversations = async () => {
   loading.value = true
   try {
-    const data = await api.get('message/')
+    const data = await api.get('/chat/messages/')
     // Handle different response formats
     let conversationsData = []
     if (Array.isArray(data)) {

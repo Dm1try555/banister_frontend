@@ -2,29 +2,22 @@
 // Chat Types
 // ============================================================================
 
+export interface ChatRoom {
+  id: number
+  name: string
+  participants: number[]
+  is_private: boolean
+  created_at: string
+}
+
 export interface ChatMessage {
   id: number
-  sender: {
-    id: number
-    first_name: string
-    last_name: string
-    email: string
-    avatar?: string
-  }
-  recipient: {
-    id: number
-    first_name: string
-    last_name: string
-    email: string
-    avatar?: string
-  }
-  message: string
-  message_type: 'text' | 'image' | 'file' | 'system'
-  is_read: boolean
+  room: number
+  sender: number
+  content: string
   created_at: string
   updated_at: string
-  reply_to?: number
-  attachments?: ChatAttachment[]
+  is_deleted: boolean
 }
 
 export interface ChatAttachment {
@@ -36,17 +29,21 @@ export interface ChatAttachment {
   uploaded_at: string
 }
 
+export interface ChatRoomCreate {
+  name: string
+  participants: number[]
+  is_private?: boolean
+}
+
 export interface ChatMessageCreate {
-  recipient_id: number
-  message: string
-  message_type?: 'text' | 'image' | 'file'
-  reply_to?: number
-  attachments?: File[]
+  room: number
+  sender: number
+  content: string
 }
 
 export interface ChatMessageUpdate {
-  message?: string
-  message_type?: 'text' | 'image' | 'file'
+  content?: string
+  is_deleted?: boolean
 }
 
 export interface ChatConversation {

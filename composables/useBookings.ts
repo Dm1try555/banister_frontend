@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import { bookingsApi } from '~/utils/apiEndpoints'
-import type { Booking } from '~/utils/apiEndpoints'
+import { bookingEndpoints } from '~/utils/apiEndpoints'
+import type { Booking } from '~/api/types/bookings'
 import { useDataLoader } from '~/composables/useDataLoader'
 import { log } from '~/utils/logger'
 
@@ -24,16 +24,16 @@ export const useBookings = () => {
   })
 
   // Computed properties
-  const pendingBookings = computed(() => bookings.value?.filter(booking => booking.status === 'pending') || [])
-  const confirmedBookings = computed(() => bookings.value?.filter(booking => booking.status === 'confirmed') || [])
-  const cancelledBookings = computed(() => bookings.value?.filter(booking => booking.status === 'cancelled') || [])
+  const pendingBookings = computed(() => bookings.value?.filter((booking: Booking) => booking.status === 'pending') || [])
+  const confirmedBookings = computed(() => bookings.value?.filter((booking: Booking) => booking.status === 'confirmed') || [])
+  const cancelledBookings = computed(() => bookings.value?.filter((booking: Booking) => booking.status === 'cancelled') || [])
 
   // Load all bookings
   const loadBookings = async () => {
     try {
       setLoading(true)
       clearError()
-      const data = await bookingsApi.getBookings()
+      const data = await bookingEndpoints.getBookings()
       log.api.response('GET', 'bookings', data)
       
       setData(data)
@@ -52,7 +52,7 @@ export const useBookings = () => {
     try {
       setLoading(true)
       clearError()
-      const data = await bookingsApi.getBooking(id)
+      const data = await bookingEndpoints.getBooking(id)
       log.api.response('GET', `bookings/${id}`, data)
       setSingleData(data)
       return currentBooking.value
@@ -70,7 +70,7 @@ export const useBookings = () => {
     try {
       setLoading(true)
       clearError()
-      const newBooking = await bookingsApi.createBooking(bookingData)
+      const newBooking = await bookingEndpoints.createBooking(bookingData)
       log.api.response('POST', 'bookings', newBooking)
       addItem(newBooking)
       return newBooking
@@ -88,7 +88,7 @@ export const useBookings = () => {
     try {
       setLoading(true)
       clearError()
-      const updatedBooking = await bookingsApi.updateBooking(id, bookingData)
+      const updatedBooking = await bookingEndpoints.updateBooking(id, bookingData)
       log.api.response('PUT', `bookings/${id}`, updatedBooking)
       
       updateItem(id, updatedBooking)
@@ -111,7 +111,7 @@ export const useBookings = () => {
     try {
       setLoading(true)
       clearError()
-      const updatedBooking = await bookingsApi.patchBooking(id, bookingData)
+      const updatedBooking = await bookingEndpoints.updateBooking(id, bookingData)
       log.api.response('PATCH', `bookings/${id}`, updatedBooking)
       
       updateItem(id, updatedBooking)
@@ -134,7 +134,7 @@ export const useBookings = () => {
     try {
       setLoading(true)
       clearError()
-      await bookingsApi.deleteBooking(id)
+      await bookingEndpoints.deleteBooking(id)
       log.api.response('DELETE', `bookings/${id}`, null)
       
       removeItem(id)
@@ -155,11 +155,11 @@ export const useBookings = () => {
     try {
       setLoading(true)
       clearError()
-      await bookingsApi.updateBookingStatus(bookingId, status)
+      await bookingEndpoints.updateBooking(bookingId, { status })
       log.api.response('PATCH', `bookings/${bookingId}/status`, { status })
       
       // Update in local state
-      const booking = bookings.value.find(b => b.id === bookingId)
+      const booking = bookings.value.find((b: Booking) => b.id === bookingId)
       if (booking) {
         updateItem(bookingId, { ...booking, status: status as any } as any)
       }

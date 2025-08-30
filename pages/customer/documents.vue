@@ -10,7 +10,7 @@ const error = ref('')
 
 onMounted(async () => {
   try {
-    const response = await api.get('documents/')
+    const response = await api.get('/documents/')
     if (response) {
       documents.value = response
     }
@@ -30,7 +30,7 @@ async function uploadDocument(event) {
   try {
     await api.post('documents/', formData)
     // обновить список документов
-    documents.value = await api.get('documents/')
+    documents.value = await api.get('/documents/')
   } catch (e) {
     error.value = 'Ошибка загрузки файла'
   }
